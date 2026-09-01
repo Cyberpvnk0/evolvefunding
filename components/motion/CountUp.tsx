@@ -11,6 +11,8 @@ interface CountUpProps {
   durationMs?: number;
   /** Start when scrolled into view instead of on mount. */
   startOnView?: boolean;
+  /** Render with en-US thousands separators, e.g. 1,200. */
+  thousands?: boolean;
   className?: string;
 }
 
@@ -24,6 +26,7 @@ export default function CountUp({
   to,
   durationMs = 2000,
   startOnView = false,
+  thousands = false,
   className,
 }: CountUpProps) {
   const reduce = useReducedMotion();
@@ -72,9 +75,11 @@ export default function CountUp({
     return () => io.disconnect();
   }, [from, to, durationMs, reduce, startOnView]);
 
+  const fmt = (n: number) => (thousands ? n.toLocaleString("en-US") : String(n));
+
   return (
-    <span ref={ref} className={cn("tabular", className)} aria-label={String(to)}>
-      {value}
+    <span ref={ref} className={cn("tabular", className)} aria-label={fmt(to)}>
+      {fmt(value)}
     </span>
   );
 }
