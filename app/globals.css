@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    background-color: #0a0a0a;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+    font-feature-settings: "ss01", "cv11", "liga";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(201, 169, 97, 0.35);
+    color: #f2eee6;
+  }
+
+  :focus-visible {
+    outline: 2px solid #c9a961;
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-normal;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img,
+  video {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Full-bleed photo treatment: dark vignette from the edges, heavier at the bottom. */
+  .vignette::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 50% 40%, rgba(10, 10, 10, 0) 35%, rgba(10, 10, 10, 0.75) 100%),
+      linear-gradient(to top, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0.35) 40%, rgba(10, 10, 10, 0.15) 70%, rgba(10, 10, 10, 0.55) 100%);
+  }
+
+  /* Small uppercase label, used for eyebrows and trust rows. */
+  .eyebrow {
+    @apply font-sans text-[11px] uppercase tracking-caps text-mute;
+  }
+
+  /* Gold hairline. */
+  .rule-gold {
+    @apply h-px w-10 bg-gold;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Safe-area padding for the bottom sticky bar on iOS. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}

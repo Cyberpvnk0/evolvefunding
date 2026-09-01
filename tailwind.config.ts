@@ -1,0 +1,69 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./app/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./content/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Deep black ground.
+        ink: "#0A0A0A",
+        // Slightly lifted surfaces (cards, bars).
+        "ink-2": "#111111",
+        "ink-3": "#161616",
+        // Off-white text.
+        bone: "#F2EEE6",
+        // Muted body text.
+        mute: "#A6A199",
+        // Hairlines.
+        line: "rgba(242, 238, 230, 0.10)",
+        // The one accent. CTAs and score numbers only.
+        gold: "#C9A961",
+        "gold-deep": "#B8964F",
+      },
+      fontFamily: {
+        display: ["var(--font-display)", "Georgia", "Times New Roman", "serif"],
+        sans: ["var(--font-body)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+      },
+      letterSpacing: {
+        tightest: "-0.03em",
+        caps: "0.14em",
+      },
+      lineHeight: {
+        display: "0.95",
+        snugger: "1.05",
+      },
+      maxWidth: {
+        page: "1200px",
+        prose: "38rem",
+      },
+      transitionTimingFunction: {
+        expensive: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      boxShadow: {
+        gold: "0 0 0 1px rgba(201, 169, 97, 0.35)",
+      },
+      keyframes: {
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(18px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+      },
+      animation: {
+        // CSS-driven reveals for above-the-fold content (no hydration wait).
+        "fade-up": "fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-in": "fade-in 1.2s ease-out both",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
