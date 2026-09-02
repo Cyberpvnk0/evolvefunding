@@ -59,6 +59,21 @@ export interface FaqItem {
   answer: string;
 }
 
+/** One figure in the hero's stat bar. */
+export interface HeroStat {
+  /** The figure exactly as it should read, e.g. "724", "$3M", "4.9". */
+  value: string;
+  /** Keep these a similar length: even labels are what make the row even. */
+  label: string;
+  /**
+   * Count up to `value` on load instead of rendering it straight away.
+   * Only valid when `value` is a plain number. Omit for a static figure.
+   */
+  countFrom?: number;
+  /** Milliseconds for that count. Ignored without `countFrom`. */
+  durationMs?: number;
+}
+
 /** The hero's video sales letter. */
 export interface Vsl {
   /**
@@ -157,19 +172,29 @@ export const hero = {
     captions: "",
   } as Vsl,
 
-  counter: {
-    from: 550,
-    to: 724,
-    durationMs: 2000,
-    // TODO: confirm the real average before launch.
-    label: "Average client jump in 90 days",
-  },
+  /**
+   * The stat bar under the button. Three figures, equal columns.
+   * Keep it to three and keep the labels a similar length: the row is only
+   * as clean as its least even column.
+   */
+  stats: [
+    {
+      value: "724",
+      label: "Average 90-day jump",
+      // TODO: confirm the real average before launch.
+      countFrom: 550,
+      durationMs: 2000,
+    },
+    { value: "$3M", label: "Items removed monthly" },
+    { value: "4.9", label: "Average client rating" },
+  ] as HeroStat[],
+
   cta: {
     label: "Start My Repair – $147/mo",
     subtext: "Cancel anytime. No contract. First results typically in 30–45 days.",
+    /** Small reassurance directly under the button, beside a lock. */
+    secure: "Secure checkout",
   },
-  /** Trust row under the CTA. Three short items. */
-  trust: ["$3M in negative items removed monthly", "4.9 rating", "Secure checkout"],
 };
 
 // ---------------------------------------------------------------------------

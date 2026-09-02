@@ -38,7 +38,7 @@ export default function Hero() {
    */
   const [aw, ah] = hero.vsl.aspect.split("/").map((n) => Number.parseFloat(n.trim()));
   const ratio = aw > 0 && ah > 0 ? aw / ah : 16 / 9;
-  const vslMax = `min(900px, max(280px, calc((100svh - 520px) * ${ratio.toFixed(4)})))`;
+  const vslMax = `min(900px, max(280px, calc((100svh - 580px) * ${ratio.toFixed(4)})))`;
 
   return (
     <section
@@ -60,7 +60,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-page flex-col items-center px-5 py-8 text-center sm:px-8 sm:py-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-page flex-col items-center px-5 py-6 text-center sm:px-8 sm:py-8">
         <h1
           id="hero-headline"
           className="animate-slide-up max-w-[18ch] font-display text-[34px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
@@ -74,7 +74,7 @@ export default function Hero() {
 
         {/* The centrepiece. */}
         <div
-          className="light-pool relative mt-5 w-full [animation-delay:200ms] animate-fade-up sm:mt-7 sm:max-w-[var(--vsl-max)]"
+          className="light-pool relative mt-5 w-full [animation-delay:200ms] animate-fade-up sm:mt-6 sm:max-w-[var(--vsl-max)]"
           style={{ "--vsl-max": vslMax } as React.CSSProperties}
         >
           <VslPlayer vsl={hero.vsl} priority />
@@ -86,33 +86,70 @@ export default function Hero() {
         </div>
 
         {/* Buy button, directly under the video. */}
-        <div className="animate-fade-up mt-5 w-full max-w-md [animation-delay:300ms] sm:mt-7">
+        <div className="animate-fade-up mt-5 flex w-full max-w-md flex-col items-center [animation-delay:300ms] sm:mt-6">
           <CtaButton section="hero" label={hero.cta.label} block />
           <p className="mt-2.5 text-[12px] leading-snug text-mute sm:text-[13px]">{hero.cta.subtext}</p>
+          <p className="mt-2 flex items-center gap-1.5 text-[11px] text-mute/80">
+            <LockMark />
+            {hero.cta.secure}
+          </p>
         </div>
 
-        {/* Compact proof strip: the score jump, then the trust items. */}
-        <div className="animate-fade-up mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 [animation-delay:400ms] sm:mt-7 sm:gap-x-7">
-          <p className="flex items-baseline gap-2">
-            <span className="font-display text-[28px] leading-none tracking-tightest text-gold sm:text-[34px]">
-              <CountUp
-                from={hero.counter.from}
-                to={hero.counter.to}
-                durationMs={hero.counter.durationMs}
-              />
-            </span>
-            <span className="eyebrow leading-snug">{hero.counter.label}</span>
-          </p>
-          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2" aria-label="Trust">
-            {hero.trust.map((item) => (
-              <li key={item} className="eyebrow flex items-center gap-2 text-bone/70">
-                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
-                {item}
+        {/*
+          Proof bar. Three figures in equal columns, split by hairlines.
+          The previous version mixed one large number with a wrapping list of
+          differently-shaped items, so nothing lined up with anything. A fixed
+          three-column grid makes the row read as one deliberate object: same
+          column width, same baseline, same treatment for every figure.
+        */}
+        <ul
+          className="surface-soft animate-fade-up mt-5 grid w-full max-w-md grid-cols-3 divide-x divide-line rounded-[3px] [animation-delay:400ms] sm:mt-6 sm:max-w-xl"
+          aria-label="Results so far"
+        >
+          {hero.stats.map((stat) => {
+            const target = Number.parseFloat(stat.value);
+            const animates = stat.countFrom !== undefined && Number.isFinite(target);
+            return (
+              <li key={stat.label} className="flex flex-col items-center px-2 py-3.5 text-center sm:px-4 sm:py-4">
+                <span className="font-display text-[26px] font-extrabold leading-none tracking-tightest text-gold sm:text-[32px]">
+                  {animates ? (
+                    <CountUp
+                      from={stat.countFrom as number}
+                      to={target}
+                      durationMs={stat.durationMs ?? 2000}
+                    />
+                  ) : (
+                    stat.value
+                  )}
+                </span>
+                <span className="mt-2 text-[10px] font-semibold uppercase leading-tight tracking-[0.07em] text-mute sm:text-[11px]">
+                  {stat.label}
+                </span>
               </li>
-            ))}
-          </ul>
-        </div>
+            );
+          })}
+        </ul>
       </div>
     </section>
+  );
+}
+
+/** Small closed padlock, shown beside the secure-checkout line. */
+function LockMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="11"
+      height="11"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.4}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="2.5" y="6" width="9" height="6.5" rx="1" />
+      <path d="M4.75 6V4.25a2.25 2.25 0 0 1 4.5 0V6" />
+    </svg>
   );
 }
