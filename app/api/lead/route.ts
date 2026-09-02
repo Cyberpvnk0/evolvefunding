@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
 /**
- * POST /api/lead. Receives the exit-intent phone number and forwards it to the
- * GoHighLevel inbound webhook, server-side, so the webhook URL never reaches
- * the browser.
+ * POST /api/lead. Receives the exit-intent lead (first name, last name, phone)
+ * and forwards it to the GoHighLevel inbound webhook, server-side, so the
+ * webhook URL never reaches the browser.
  *
  * With GHL_WEBHOOK_URL unset (local, preview) the route still answers
  * { ok: true, forwarded: false } so the form succeeds, and warns once in the
@@ -27,9 +27,23 @@ const UTM_KEYS = [
   "gclid",
 ] as const;
 
+/** Longest name we accept. Anything beyond this is a paste, not a name. */
+const NAME_MAX = 80;
+
 let warnedMissingWebhook = false;
 
+/**
+ * Trim a submitted name and collapse inner whitespace. Returns "" when the
+ * value is missing or not a string, which the caller rejects.
+ */
+function cleanName(input: unknown): string {
+  if (typeof input !== "string") return "";
+  return input.trim().replace(/\s+/g, " ").slice(0, NAME_MAX);
+}
+
 interface LeadBody {
+  firstName?: unknown;
+  lastName?: unknown;
   phone?: unknown;
   source?: unknown;
   path?: unknown;
@@ -53,6 +67,12 @@ export async function POST(req: Request) {
   try {
     body = (await req.json()) as LeadBody;
   } catch {
+    return NextResponse.json({ ok: false }, { status: 400 });
+  }
+
+  const firstName = cleanName(body.firstName);
+  const lastName = cleanName(body.lastName);
+  if (!firstName || !lastName) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
@@ -85,6 +105,10 @@ export async function POST(req: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        firstName,
+        lastName,
+        // Sent alongside the parts, since some CRM mappings expect one field.
+        name: `${firstName} ${lastName}`,
         phone,
         source,
         path,

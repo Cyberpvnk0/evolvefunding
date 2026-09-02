@@ -9,6 +9,7 @@ import { brand, exitIntent } from "@/content/site";
 
 type LeadSource = "exit_intent" | "timer";
 type Status = "idle" | "submitting" | "sent" | "error";
+type ErrorField = "firstName" | "lastName" | "phone" | "send" | null;
 
 /** Session flags. Either one set means the slide-up never shows again this session. */
 const DISMISSED_KEY = "ef_exit_dismissed";
@@ -17,6 +18,10 @@ const SENT_KEY = "ef_lead_sent";
 const RETRY_MS = 10_000;
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Shared input styling. 16px text stops iOS zooming the page on focus. */
+const FIELD =
+  "h-12 w-full min-w-0 rounded-[3px] border border-line bg-ink px-4 text-[16px] text-bone placeholder:text-mute focus:border-gold focus:shadow-gold focus:outline-none";
 
 /** Slide up from below the viewport. */
 const slide: Variants = {
@@ -82,12 +87,18 @@ export default function ExitIntent() {
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+  /** Which field failed validation, or "send" when the request itself failed. */
+  const [errorField, setErrorField] = useState<ErrorField>(null);
   const sourceRef = useRef<LeadSource>("timer");
   const openerRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -179,20 +190,42 @@ export default function ExitIntent() {
     e.preventDefault();
     if (status === "submitting") return;
 
+    // Validate in reading order and focus the field that needs fixing, so the
+    // message always points at something the visitor can act on.
+    const first = firstName.trim();
+    const last = lastName.trim();
     const normalized = normalizePhone(phone);
     const digits = normalized.replace(/\D/g, "").length;
+
+    if (!first) {
+      setStatus("error");
+      setErrorField("firstName");
+      inputRef.current?.focus();
+      return;
+    }
+    if (!last) {
+      setStatus("error");
+      setErrorField("lastName");
+      lastNameRef.current?.focus();
+      return;
+    }
     if (digits < 10 || digits > 15) {
       setStatus("error");
+      setErrorField("phone");
+      phoneRef.current?.focus();
       return;
     }
 
     setStatus("submitting");
+    setErrorField(null);
     const source = sourceRef.current;
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          firstName: first,
+          lastName: last,
           phone: normalized,
           source,
           path: window.location.pathname,
@@ -205,6 +238,7 @@ export default function ExitIntent() {
       setStatus("sent");
     } catch {
       setStatus("error");
+      setErrorField("send");
     }
   };
 
@@ -267,28 +301,86 @@ export default function ExitIntent() {
                 </p>
               ) : (
                 <form onSubmit={onSubmit} noValidate className="mt-6">
-                  <div className="flex flex-col gap-3 sm:flex-row">
+                  {/* Names sit side by side even on a 390px screen: two short
+                      fields read as one step, where stacking them would make
+                      the sheet look like a long form and cost completions. */}
+                  <div className="flex gap-3">
+                    <div className="min-w-0 flex-1">
+                      <label htmlFor="exit-intent-first" className="sr-only">
+                        {exitIntent.fields.firstName.label}
+                      </label>
+                      <input
+                        ref={inputRef}
+                        id="exit-intent-first"
+                        type="text"
+                        autoComplete="given-name"
+                        name="firstName"
+                        placeholder={exitIntent.fields.firstName.placeholder}
+                        required
+                        value={firstName}
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                          if (status === "error") {
+                            setStatus("idle");
+                            setErrorField(null);
+                          }
+                        }}
+                        aria-invalid={errorField === "firstName"}
+                        aria-describedby={status === "error" ? "exit-intent-error" : undefined}
+                        className={FIELD}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <label htmlFor="exit-intent-last" className="sr-only">
+                        {exitIntent.fields.lastName.label}
+                      </label>
+                      <input
+                        ref={lastNameRef}
+                        id="exit-intent-last"
+                        type="text"
+                        autoComplete="family-name"
+                        name="lastName"
+                        placeholder={exitIntent.fields.lastName.placeholder}
+                        required
+                        value={lastName}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          if (status === "error") {
+                            setStatus("idle");
+                            setErrorField(null);
+                          }
+                        }}
+                        aria-invalid={errorField === "lastName"}
+                        aria-describedby={status === "error" ? "exit-intent-error" : undefined}
+                        className={FIELD}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-col gap-3 sm:flex-row">
                     <label htmlFor="exit-intent-phone" className="sr-only">
-                      {exitIntent.placeholder}
+                      {exitIntent.fields.phone.label}
                     </label>
                     <input
-                      ref={inputRef}
+                      ref={phoneRef}
                       id="exit-intent-phone"
                       type="tel"
                       inputMode="tel"
                       autoComplete="tel"
                       name="phone"
-                      placeholder={exitIntent.placeholder}
+                      placeholder={exitIntent.fields.phone.placeholder}
                       required
                       value={phone}
                       onChange={(e) => {
                         setPhone(e.target.value);
-                        if (status === "error") setStatus("idle");
+                        if (status === "error") {
+                            setStatus("idle");
+                            setErrorField(null);
+                          }
                       }}
-                      aria-invalid={status === "error"}
+                      aria-invalid={errorField === "phone"}
                       aria-describedby={status === "error" ? "exit-intent-error" : undefined}
-                      // 16px so iOS does not zoom the page when the field is focused.
-                      className="h-12 w-full min-w-0 rounded-[3px] border border-line bg-ink px-4 text-[16px] text-bone placeholder:text-mute focus:border-gold focus:shadow-gold focus:outline-none sm:flex-1"
+                      className={`${FIELD} sm:flex-1`}
                     />
                     <button
                       type="submit"
@@ -299,9 +391,9 @@ export default function ExitIntent() {
                     </button>
                   </div>
 
-                  {status === "error" && (
+                  {status === "error" && errorField && (
                     <p id="exit-intent-error" role="alert" className="mt-2 text-[13px] text-bone">
-                      {exitIntent.error}
+                      {exitIntent.errors[errorField]}
                     </p>
                   )}
 

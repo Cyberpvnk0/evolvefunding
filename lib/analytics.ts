@@ -17,7 +17,10 @@ export type AnalyticsEvent =
   | "scroll_90"
   | "cta_click"
   | "checkout_redirect"
-  | "lead_submit";
+  | "lead_submit"
+  | "vsl_play"
+  | "vsl_progress"
+  | "vsl_complete";
 
 export type EventParams = Record<string, string | number | boolean | undefined>;
 
@@ -35,11 +38,13 @@ const META_EVENT: Partial<Record<AnalyticsEvent, string>> = {
   page_view: "PageView",
   checkout_redirect: "InitiateCheckout",
   lead_submit: "Lead",
+  vsl_play: "ViewContent",
 };
 
 const TIKTOK_EVENT: Partial<Record<AnalyticsEvent, string>> = {
   checkout_redirect: "InitiateCheckout",
   lead_submit: "SubmitForm",
+  vsl_play: "ViewContent",
 };
 
 const isBrowser = typeof window !== "undefined";

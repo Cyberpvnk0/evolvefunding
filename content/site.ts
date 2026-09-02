@@ -59,6 +59,32 @@ export interface FaqItem {
   answer: string;
 }
 
+/** The hero's video sales letter. */
+export interface Vsl {
+  /**
+   * "file"  plays a self-hosted MP4 from /public/proof/.
+   * "embed" shows the poster until it is clicked, then swaps in an iframe
+   *         (YouTube, Vimeo, Wistia). Their scripts never load until play,
+   *         so an unplayed video costs the page nothing.
+   */
+  type: "file" | "embed";
+  /** Used when type is "file". */
+  src: string;
+  /** Used when type is "embed". Paste the platform's EMBED url, not the share url. */
+  embedUrl: string;
+  /** Thumbnail shown before play. This is the single biggest lever on play rate. */
+  poster: string;
+  posterAlt: string;
+  /** CSS aspect ratio. "16 / 9" for landscape, "9 / 16" for a vertical cut. */
+  aspect: string;
+  /** Accessible name for the play button. */
+  playLabel: string;
+  /** One short line under the video before it is played. Empty string hides it. */
+  hint: string;
+  /** Optional WebVTT captions track for a self-hosted file. Empty string for none. */
+  captions: string;
+}
+
 export interface Step {
   title: string;
   body: string;
@@ -108,13 +134,29 @@ export const offer = {
 
 export const hero = {
   headline: "They Were Told No. Now They Drive This.",
-  subheadline:
-    "Real clients. Real scores. 550 to 720+ in a few months, then approved for the car, the house, the funding.",
-  /** Autoplaying, muted, looping. Keep it under 2 MB and under 15 seconds. */
-  video: "/proof/hero-loop.mp4",
-  /** Shown before the video loads and on devices that block autoplay. */
-  poster: "/proof/hero-poster.jpg",
-  posterAlt: "Evolve Funding clients standing beside the cars they were approved for",
+  /** One line. It sits between the headline and the video, so keep it short. */
+  subheadline: "Real clients. Real scores. Watch what happened.",
+
+  /**
+   * Still image behind the video. Deliberately dark and low contrast: it adds
+   * depth without competing with the VSL for attention.
+   */
+  backdrop: "/proof/hero-backdrop.jpg",
+  backdropAlt: "Evolve Funding clients standing beside the cars they were approved for",
+
+  /** The video sales letter. The centrepiece of the page. */
+  vsl: {
+    type: "file",
+    src: "/proof/vsl.mp4",
+    embedUrl: "",
+    poster: "/proof/vsl-poster.jpg",
+    posterAlt: "Evolve Funding founder with client results on screen",
+    aspect: "16 / 9",
+    playLabel: "Play the video",
+    hint: "VSL_LENGTH_PLACEHOLDER, sound on.",
+    captions: "",
+  } as Vsl,
+
   counter: {
     from: 550,
     to: 724,
@@ -126,9 +168,9 @@ export const hero = {
     label: "Start My Repair – $147/mo",
     subtext: "Cancel anytime. No contract. First results typically in 30–45 days.",
   },
-  /** Trust row under the CTA. Three short items. Editable placeholders. */
-  trust: ["500+ items removed", "4.9 rating", "Secure checkout"],
-} as const;
+  /** Trust row under the CTA. Three short items. */
+  trust: ["$3M in negative items removed monthly", "4.9 rating", "Secure checkout"],
+};
 
 // ---------------------------------------------------------------------------
 // 2. Sticky CTA bar
@@ -533,11 +575,25 @@ export const footer = {
 
 export const exitIntent = {
   headline: "Not ready? Text me your questions.",
-  body: "Leave your number. You get a real reply from a real person, usually within the hour.",
-  placeholder: "Your mobile number",
+  body: "Leave your name and number. You get a real reply from a real person, usually within the hour.",
+  fields: {
+    firstName: { label: "First name", placeholder: "First name" },
+    lastName: { label: "Last name", placeholder: "Last name" },
+    phone: { label: "Mobile number", placeholder: "Mobile number" },
+  },
   button: "Text Me",
   success: "Got it. Watch your phone.",
-  error: "That number did not go through. Try again.",
+  /**
+   * Validation messages name the field that is wrong. `send` is reserved for a
+   * request that actually failed, so a visitor is never told their number
+   * "did not go through" when they simply left a box empty.
+   */
+  errors: {
+    firstName: "Enter your first name.",
+    lastName: "Enter your last name.",
+    phone: "Enter a valid mobile number.",
+    send: "That did not go through. Try again.",
+  },
   consent: "By submitting, you agree to receive a text reply. Message and data rates may apply.",
   /** Delay before the slide-up shows on mobile. */
   mobileDelayMs: 45000,

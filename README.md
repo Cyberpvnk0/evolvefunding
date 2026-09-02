@@ -63,7 +63,12 @@ The wrapper in `lib/analytics.ts` fans one `track()` call out to whichever pixel
 | `scroll_90` | 90% scroll depth | custom | custom | event |
 | `cta_click` | Any checkout button, with `section` | custom | custom | event |
 | `checkout_redirect` | Same click, right before leaving | InitiateCheckout | InitiateCheckout | event |
-| `lead_submit` | Exit-intent phone form success | Lead | SubmitForm | event |
+| `lead_submit` | Exit-intent form success | Lead | SubmitForm | event |
+| `vsl_play` | Visitor presses play on the hero video | ViewContent | ViewContent | event |
+| `vsl_progress` | 25%, 50%, 75% watched (with `percent`) | custom | custom | event |
+| `vsl_complete` | Video watched to the end | custom | custom | event |
+
+`vsl_progress` is the most useful number on this page: it tells you where in the video people leave, which is what you rewrite next.
 
 In development every event is also printed to the browser console as `[analytics] <event>`.
 
@@ -107,12 +112,44 @@ Edit `scoreShots`. Each item has a `before` and `after` object with an `image`, 
 },
 ```
 
+### The hero video (VSL)
+
+The hero is built around your video sales letter. Everything lives under `hero.vsl` in `content/site.ts`.
+
+**Self-hosted (default).** Drop your file at `public/proof/vsl.mp4` and a thumbnail at `public/proof/vsl-poster.jpg`. Nothing else to do.
+
+```ts
+vsl: {
+  type: "file",
+  src: "/proof/vsl.mp4",
+  poster: "/proof/vsl-poster.jpg",
+  aspect: "16 / 9",          // "9 / 16" if you cut it vertical
+  hint: "4 minutes, sound on.",
+  captions: "",              // optional "/proof/vsl.vtt"
+}
+```
+
+**Hosted elsewhere.** Set `type: "embed"` and paste the platform's *embed* URL (not the share URL) into `embedUrl`. The iframe is only created when someone presses play, so the platform's scripts never load for a visitor who does not watch.
+
+```ts
+vsl: { type: "embed", embedUrl: "https://player.vimeo.com/video/123456789", ... }
+```
+
+Notes worth knowing:
+
+- **Nothing downloads until play.** A self-hosted file carries `preload="none"`; an embed does not exist until clicked. That is what lets a video sit above the fold and still score 90+ on mobile.
+- **It starts with sound**, because a VSL is spoken. That only works because `play()` runs inside the click itself, so do not move it into an effect.
+- **The poster is the highest-leverage asset on the page.** It is the first thing a visitor judges and it decides your play rate. Your face, large, plus one legible result. 1600 × 900.
+- Re-encode for the web with `-movflags +faststart` so playback begins before the file finishes downloading.
+- Set `hint` to the real running time (it ships as `VSL_LENGTH_PLACEHOLDER`). Stating the length raises completion rates. Empty string hides the line.
+
 ### Hero video and stills
 
 | Asset | Path | Notes |
 | --- | --- | --- |
-| Hero loop | `public/proof/hero-loop.mp4` | Muted, looping. Aim for under 2 MB and under 15 seconds, 1280 × 720, H.264. `ffmpeg -i in.mp4 -vf scale=1280:-2 -an -c:v libx264 -crf 30 -movflags +faststart hero-loop.mp4` |
-| Hero poster | `public/proof/hero-poster.jpg` | First frame of the loop. This is the LCP image and is preloaded. 1920 × 1080, under 150 KB. |
+| VSL | `public/proof/vsl.mp4` | Your video sales letter, the centrepiece of the hero. 1280 × 720 or 1920 × 1080, H.264, `-movflags +faststart` so it starts instantly: `ffmpeg -i in.mov -vf scale=1280:-2 -c:v libx264 -crf 23 -c:a aac -b:a 128k -movflags +faststart vsl.mp4`. Nothing downloads until the visitor presses play. |
+| VSL poster | `public/proof/vsl-poster.jpg` | The thumbnail before play, and the LCP image. This single asset moves play rate more than anything else on the page: your face, large, plus a legible result. 1600 × 900, under 150 KB. |
+| Hero backdrop | `public/proof/hero-backdrop.jpg` | Dark still behind the video, held at 40% opacity. 1920 × 1080, under 150 KB. |
 | Final CTA still | `public/proof/final-cta.jpg` | 1920 × 1080. |
 | Open Graph | `public/proof/og-image.jpg` | 1200 × 630. Shown when the link is shared. |
 | Testimonial avatars | `public/proof/testimonial-N.jpg` | Square, 320 × 320. |
@@ -154,7 +191,7 @@ Whatever you eventually use for checkout, point its post-payment redirect at `ht
 
 | # | Section | File |
 | --- | --- | --- |
-| 1 | Hero: video, headline, live score counter, CTA, trust row | `components/sections/Hero.tsx` |
+| 1 | Hero: headline, VSL, buy button, score counter, trust row | `components/sections/Hero.tsx`, `VslPlayer.tsx` |
 | 2 | Sticky CTA bar (bottom on mobile, top on desktop) | `components/sections/StickyBar.tsx` |
 | 3 | Proof wall: client photos with lightbox, score screenshot strip | `components/sections/ProofWall.tsx`, `ScoreStrip.tsx` |
 | 4 | The problem, three lines | `components/sections/Problem.tsx` |
@@ -164,15 +201,15 @@ Whatever you eventually use for checkout, point its post-payment redirect at `ht
 | 8 | FAQ accordion | `components/sections/Faq.tsx` |
 | 9 | Risk reversal + final CTA | `components/sections/FinalCta.tsx` |
 | 10 | Footer with disclaimer | `components/sections/Footer.tsx` |
-| — | Exit-intent / 45-second slide-up | `components/ExitIntent.tsx`, `app/api/lead/route.ts` |
+| — | Exit-intent / 45-second slide-up (first name, last name, phone) | `components/ExitIntent.tsx`, `app/api/lead/route.ts` |
 | — | Thank-you, Disclosures, Privacy, Terms | `app/thank-you`, `app/disclosures`, `app/privacy`, `app/terms` |
 
 ---
 
 ## Performance notes
 
-- The hero poster is the only `priority` image. Everything else lazy loads through `next/image`.
-- The hero video mounts after hydration so it never competes with the poster for bandwidth.
+- Only the two hero images (`priority`) load eagerly. Everything else lazy loads through `next/image`.
+- The VSL downloads nothing until it is played, so an unwatched video costs the page zero bytes.
 - Pixel scripts are inlined only when their env var is set. An empty `.env` ships zero third-party bytes.
 - `prefers-reduced-motion` disables the count-up, fade-ups, video, and accordion animation.
 

@@ -1,79 +1,97 @@
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
 import CountUp from "@/components/motion/CountUp";
-import HeroVideo from "@/components/sections/HeroVideo";
+import VslPlayer from "@/components/sections/VslPlayer";
 import { hero } from "@/content/site";
 
 /**
- * 1. HERO. Full viewport, video background with poster fallback, headline,
- * subheadline, live score counter, gold CTA, trust row.
+ * 1. HERO. Built around the video sales letter.
+ *
+ * Stacking order, top to bottom: headline, one-line subhead, the VSL, the buy
+ * button, then a compact proof strip (score jump + trust items). All of it is
+ * sized to fit inside one viewport at 390px without scrolling, which is the
+ * constraint that drives every type size and gap here. The section is a
+ * flex column with `justify-center`, so on a tall screen the block centres and
+ * on a short one it packs from the top and the gaps take the strain.
+ *
+ * The VSL poster is the only priority image on the page, since it is the LCP
+ * element and the thing the visitor is meant to press.
  *
  * Above-the-fold content uses CSS `animate-fade-up` (not <FadeUp />) so the
  * first paint never waits for hydration. The h1 uses the transform-only
- * `animate-slide-up` instead: a fade from opacity 0 keeps it out of the LCP
- * candidates (the full-viewport poster is excluded from LCP by the browser),
- * so the h1 must paint visible at first frame to be the LCP element.
+ * `animate-slide-up` instead: a fade from opacity 0 would keep it out of the
+ * LCP candidates, so it must paint visible on the first frame.
  */
 export default function Hero() {
   return (
     <section
       id="hero"
       aria-labelledby="hero-headline"
-      className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink"
+      className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden bg-ink"
     >
-      {/* Photography layer: preloaded poster with the video fading in over it. */}
+      {/* Backdrop: a dark still, held well back so the video owns the screen. */}
       <div className="vignette absolute inset-0">
         <Image
-          src={hero.poster}
-          alt={hero.posterAlt}
+          src={hero.backdrop}
+          alt=""
+          aria-hidden="true"
           fill
           priority
-          sizes="(orientation: portrait) 178vh, 100vw"
-          quality={70}
-          className="object-cover"
+          sizes="(orientation: portrait) 90vh, 60vw"
+          quality={45}
+          className="object-cover opacity-40"
         />
-        <HeroVideo src={hero.video} />
       </div>
 
-      {/* Copy layer */}
-      <div className="relative z-10 mx-auto w-full max-w-page px-5 pb-12 pt-28 sm:px-8 sm:pb-16 lg:pb-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-page flex-col items-center px-5 py-8 text-center sm:px-8 sm:py-10">
         <h1
           id="hero-headline"
-          className="animate-slide-up max-w-[16ch] font-display text-[46px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
+          className="animate-slide-up max-w-[18ch] font-display text-[34px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
         >
           {hero.headline}
         </h1>
 
-        <p className="animate-fade-up mt-5 max-w-[34rem] text-[16px] leading-relaxed text-bone/80 [animation-delay:120ms] sm:mt-6 sm:text-lg">
+        <p className="animate-fade-up mt-3 max-w-[44ch] text-[15px] leading-relaxed text-bone/80 [animation-delay:100ms] sm:mt-4 sm:text-lg">
           {hero.subheadline}
         </p>
 
-        {/* Live counter */}
-        <div className="animate-fade-up mt-7 flex items-end gap-4 [animation-delay:240ms] sm:mt-9">
-          <CountUp
-            from={hero.counter.from}
-            to={hero.counter.to}
-            durationMs={hero.counter.durationMs}
-            className="font-display text-[72px] leading-[0.85] tracking-tightest text-gold sm:text-[96px]"
-          />
-          <span className="eyebrow mb-1 max-w-[9rem] leading-snug sm:max-w-none">{hero.counter.label}</span>
+        {/* The centrepiece. */}
+        <div className="animate-fade-up mt-5 w-full max-w-[900px] [animation-delay:200ms] sm:mt-7">
+          <VslPlayer vsl={hero.vsl} priority />
+          {hero.vsl.hint ? (
+            <p className="mt-2.5 text-[12px] tracking-[0.04em] text-mute sm:mt-3 sm:text-[13px]">
+              {hero.vsl.hint}
+            </p>
+          ) : null}
         </div>
 
-        {/* Primary CTA */}
-        <div className="animate-fade-up mt-8 max-w-md [animation-delay:360ms] sm:mt-10">
+        {/* Buy button, directly under the video. */}
+        <div className="animate-fade-up mt-5 w-full max-w-md [animation-delay:300ms] sm:mt-7">
           <CtaButton section="hero" label={hero.cta.label} block />
-          <p className="mt-3 text-[13px] leading-snug text-mute">{hero.cta.subtext}</p>
+          <p className="mt-2.5 text-[12px] leading-snug text-mute sm:text-[13px]">{hero.cta.subtext}</p>
         </div>
 
-        {/* Trust row */}
-        <ul className="animate-fade-up mt-8 flex flex-wrap gap-x-6 gap-y-2 [animation-delay:480ms] sm:mt-10" aria-label="Trust">
-          {hero.trust.map((item) => (
-            <li key={item} className="eyebrow flex items-center gap-2 text-bone/70">
-              <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
-              {item}
-            </li>
-          ))}
-        </ul>
+        {/* Compact proof strip: the score jump, then the trust items. */}
+        <div className="animate-fade-up mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 [animation-delay:400ms] sm:mt-7 sm:gap-x-7">
+          <p className="flex items-baseline gap-2">
+            <span className="font-display text-[28px] leading-none tracking-tightest text-gold sm:text-[34px]">
+              <CountUp
+                from={hero.counter.from}
+                to={hero.counter.to}
+                durationMs={hero.counter.durationMs}
+              />
+            </span>
+            <span className="eyebrow leading-snug">{hero.counter.label}</span>
+          </p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2" aria-label="Trust">
+            {hero.trust.map((item) => (
+              <li key={item} className="eyebrow flex items-center gap-2 text-bone/70">
+                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

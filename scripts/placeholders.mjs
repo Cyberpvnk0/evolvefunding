@@ -24,7 +24,8 @@ if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 /** @type {Array<{file:string,w:number,h:number,label:string,hint:string,kind?:"photo"|"score"|"avatar"|"poster"}>} */
 const assets = [];
 
-assets.push({ file: "hero-poster.jpg", w: 1920, h: 1080, label: "HERO POSTER", hint: "Fallback frame for hero-loop.mp4", kind: "poster" });
+assets.push({ file: "hero-backdrop.jpg", w: 1920, h: 1080, label: "HERO BACKDROP", hint: "Dark still behind the VSL", kind: "poster" });
+assets.push({ file: "vsl-poster.jpg", w: 1600, h: 900, label: "VSL POSTER", hint: "Thumbnail before play. Your face, big.", kind: "poster" });
 assets.push({ file: "final-cta.jpg", w: 1920, h: 1080, label: "FINAL CTA PHOTO", hint: "Still photo, client with keys at dusk", kind: "poster" });
 assets.push({ file: "og-image.jpg", w: 1200, h: 630, label: "OPEN GRAPH IMAGE", hint: "Shown when the link is shared", kind: "poster" });
 
