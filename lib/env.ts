@@ -11,7 +11,7 @@
  * undefined, so a blank var would otherwise reach code expecting a real one.
  */
 
-const DEFAULT_SITE_URL = "https://evolvefunding.com";
+const DEFAULT_SITE_URL = "https://evolvefundingllc.com";
 
 /** Trim a value and treat blank or whitespace-only as unset. */
 function read(value: string | undefined, fallback = ""): string {

@@ -28,7 +28,7 @@ All configuration lives in environment variables. Copy `.env.example` to `.env.l
 
 | Variable | Required | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | No | Canonical URL for Open Graph tags, the sitemap, and robots.txt. A bare domain works; a trailing slash is stripped. Blank or invalid falls back to `https://evolvefunding.com`. |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical URL for Open Graph tags, the sitemap, and robots.txt. A bare domain works; a trailing slash is stripped. Blank or invalid falls back to `https://evolvefundingllc.com`. |
 | `NEXT_PUBLIC_CHECKOUT_URL` | No | Where every CTA sends the visitor. Provider-neutral: an order form, a hosted checkout, another landing page. Leave it unset and the buttons render but stay inert. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID. Leave blank to ship no Meta code. |
 | `NEXT_PUBLIC_TIKTOK_PIXEL_ID` | No | TikTok Pixel ID. Leave blank to ship no TikTok code. |

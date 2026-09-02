@@ -75,7 +75,7 @@ export const brand = {
   legalName: "Evolve Funding LLC",
   tagline: "Credit repair that ends in an approval.",
   /** Contact email shown in the footer and on the thank-you page. */
-  email: "support@evolvefunding.com",
+  email: "support@evolvefundingllc.com",
   /** E.164 phone number used for the "Text us" buttons. Replace before launch. */
   smsNumber: "+15555550123",
   /** Pre-filled text message body for the "Text us" buttons. */
