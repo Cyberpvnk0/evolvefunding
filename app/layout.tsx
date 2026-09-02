@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { brand } from "@/content/site";
+import { env } from "@/lib/env";
 import Analytics from "@/components/Analytics";
 
 const inter = Inter({
@@ -18,7 +19,8 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-display",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://evolvefunding.com";
+// Validated in lib/env.ts, so metadataBase can never throw during the build.
+const siteUrl = env.siteUrl;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

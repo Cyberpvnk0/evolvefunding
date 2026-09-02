@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = env.siteUrl.replace(/\/$/, "");
+  const base = env.siteUrl;
   const now = new Date();
   return [
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },

@@ -1,6 +1,6 @@
 # Evolve Funding — Sales Funnel
 
-A single-page, mobile-first sales funnel for the Evolve Funding credit repair subscription ($147/month). One goal: get the visitor to the Stripe checkout. No call booking, no nav menu, no distractions.
+A single-page, mobile-first sales funnel for the Evolve Funding credit repair subscription ($147/month). One goal: get the visitor to click through to checkout. No call booking, no nav menu, no distractions.
 
 **Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS, Framer Motion. Deploys to Vercel in about five minutes.
 
@@ -22,24 +22,35 @@ npm run build && npm run start
 
 ---
 
-## 1. Set the checkout URL and pixel IDs
+## 1. Set the environment variables
 
 All configuration lives in environment variables. Copy `.env.example` to `.env.local` for local work, and add the same keys in Vercel for production.
 
 | Variable | Required | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_CHECKOUT_URL` | Yes | Your Stripe Payment Link. Every CTA on the site points here. UTM params and a `client_reference_id=<section>` param are appended automatically. |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical URL for Open Graph tags, the sitemap, and robots.txt. A bare domain works; a trailing slash is stripped. Blank or invalid falls back to `https://evolvefunding.com`. |
+| `NEXT_PUBLIC_CHECKOUT_URL` | No | Where every CTA sends the visitor. Provider-neutral: an order form, a hosted checkout, another landing page. Leave it unset and the buttons render but stay inert. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID. Leave blank to ship no Meta code. |
 | `NEXT_PUBLIC_TIKTOK_PIXEL_ID` | No | TikTok Pixel ID. Leave blank to ship no TikTok code. |
 | `NEXT_PUBLIC_GA4_ID` | No | GA4 measurement ID (`G-XXXXXXX`). Leave blank to ship no GA code. The site sends `page_view` itself on every route change, so turn off **Enhanced measurement → Page changes based on browser history events** in the GA4 data stream, otherwise client-side navigations are double-counted. |
 | `GHL_WEBHOOK_URL` | No | GoHighLevel inbound webhook. The exit-intent phone form POSTs here, server-side. If blank, the form still succeeds in the UI but nothing is forwarded. |
-| `NEXT_PUBLIC_SITE_URL` | No | Canonical URL for Open Graph tags, sitemap, and robots. Defaults to `https://evolvefunding.com`. |
 
-The checkout URL is never hardcoded. Search the codebase for `NEXT_PUBLIC_CHECKOUT_URL` and you will find exactly one read, in `lib/env.ts`.
+Every variable is optional and every one is blank-safe: a variable that exists but is empty is treated as unset, so the build never fails on a missing or blank value.
+
+`NEXT_PUBLIC_*` values are inlined into the bundle at build time. Changing one in Vercel does not affect an existing deployment — you have to redeploy.
+
+### No payment processor is wired up
+
+There is no Stripe, and no processor SDK anywhere in the repo. The CTAs point at whatever URL you put in `NEXT_PUBLIC_CHECKOUT_URL`. When you pick a processor or order form, paste its URL there and redeploy — nothing else changes.
+
+Two things to update when you do:
+
+- `finalCta.badges[0]` in `content/site.ts` currently reads "Secure checkout". Name the processor once you have one.
+- `privacy.sections` mentions "our payment provider" generically.
 
 ### Which CTA converted?
 
-Each button sets `client_reference_id=<section>` on the checkout link (`hero`, `sticky_bar`, `proof`, `included`, `faq`, `final`). Stripe stores it as the Checkout Session's `client_reference_id` (visible on the payment in the Dashboard and in `checkout.session.completed` webhooks), so you can attribute payments to the section that sent them. UTM params (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`) plus `fbclid`, `ttclid`, and `gclid` are captured on first load, held in sessionStorage, and forwarded on every CTA. Stripe does not store those: it appends the `utm_*` values to the after-payment redirect URL (`/thank-you`) and discards the click IDs, so use the `cta_click` / `checkout_redirect` pixel events for click-level attribution.
+Each button appends `ref=<section>` to the destination (`hero`, `sticky_bar`, `proof`, `included`, `faq`, `final`), alongside the visitor's UTM params (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`) and `fbclid`, `ttclid`, `gclid`. Those are captured on first load, held in sessionStorage, and forwarded on every CTA. Whether the destination stores them depends on what you point it at; the `cta_click` and `checkout_redirect` pixel events give you click-level attribution regardless.
 
 ### Events fired
 
@@ -127,15 +138,15 @@ The video is skipped automatically for visitors who prefer reduced motion or hav
 
 1. Push this repo to GitHub.
 2. In Vercel, **Add New Project**, import the repo. Framework preset is detected as Next.js. Leave build settings at their defaults.
-3. Under **Environment Variables**, add `NEXT_PUBLIC_CHECKOUT_URL` and any pixel IDs from the table above. Add `GHL_WEBHOOK_URL` if you want the exit-intent form forwarded.
+3. Under **Environment Variables**, add the keys from the table above, or use **Import .env** with the file you were given. Every key is optional, so you can deploy first and add them later — just redeploy afterwards.
 4. Click **Deploy**. First build takes about a minute.
 5. Add your domain under **Settings → Domains** and set `NEXT_PUBLIC_SITE_URL` to match, then redeploy.
 
-Every push to `main` redeploys. Preview deployments get their own URL, so you can point a preview at a Stripe test-mode Payment Link by setting a different `NEXT_PUBLIC_CHECKOUT_URL` for the Preview environment.
+Every push to `main` redeploys. Preview deployments get their own URL, so you can point a preview at a test destination by setting a different `NEXT_PUBLIC_CHECKOUT_URL` for the Preview environment.
 
 ### After paying
 
-Set the Stripe Payment Link's **After payment** option to redirect to `https://yourdomain.com/thank-you`. That page is `noindex` and has the next steps and a "Text us now" button.
+Whatever you eventually use for checkout, point its post-payment redirect at `https://yourdomain.com/thank-you`. That page is `noindex` and has the next steps and a "Text us now" button.
 
 ---
 

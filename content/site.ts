@@ -494,7 +494,9 @@ export const finalCta = {
     label: "Start My Repair Now",
     subtext: "Cancel anytime. No contract.",
   },
-  badges: ["Secure checkout by Stripe", "256-bit encryption", "Month to month"],
+  // Name your processor in the first badge once one is chosen,
+  // e.g. "Secure checkout by <processor>".
+  badges: ["Secure checkout", "256-bit encryption", "Month to month"],
   clientCount: {
     // TODO: replace with the real client count.
     value: 1200,
@@ -636,7 +638,7 @@ export const privacy = {
   sections: [
     {
       heading: "What we collect",
-      body: "Your name, contact details, and the documents you upload so we can dispute items on your behalf. Payment details are handled by Stripe and never touch our servers.",
+      body: "Your name, contact details, and the documents you upload so we can dispute items on your behalf. Payment details are handled by our payment provider and never touch our servers.",
     },
     {
       heading: "How we use it",

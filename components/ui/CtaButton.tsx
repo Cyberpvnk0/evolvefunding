@@ -16,13 +16,18 @@ interface CtaButtonProps {
 }
 
 /**
- * The one checkout button. Solid champagne gold, ink text, no gradient.
+ * The one CTA button. Solid champagne gold, ink text, no gradient.
  *
- * Renders as a real <a> so it works before hydration. The href starts as the
- * base checkout URL and is upgraded with the visitor's UTM params after mount
- * so server and client markup match. The params are read straight from the
- * landing URL (captureAttribution is idempotent) rather than from storage, so
- * the first ad-click visit carries them regardless of effect order.
+ * With a destination configured (NEXT_PUBLIC_CHECKOUT_URL) it renders a real
+ * <a>, so it works before hydration. The href starts as the bare destination
+ * and is upgraded with the visitor's UTM params after mount, so server and
+ * client markup match. Params are read straight from the landing URL
+ * (captureAttribution is idempotent) rather than from storage, so the first
+ * ad-click visit carries them regardless of effect order.
+ *
+ * With no destination configured it renders a <button> instead: identical
+ * styling, still keyboard reachable, still fires analytics, but no dead link.
+ * That keeps the page honest until a checkout destination is chosen.
  */
 export default function CtaButton({
   section,
@@ -39,25 +44,36 @@ export default function CtaButton({
 
   const onClick = () => {
     track("cta_click", { section });
-    track("checkout_redirect", { section, url: href });
+    if (href) track("checkout_redirect", { section, url: href });
+    else if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[cta] No destination configured. Set NEXT_PUBLIC_CHECKOUT_URL to send "${section}" somewhere.`,
+      );
+    }
   };
 
+  const classes = cn(
+    "inline-flex items-center justify-center select-none whitespace-nowrap",
+    "bg-gold text-ink font-sans font-semibold tracking-[0.01em] rounded-[3px]",
+    "transition-[background-color,transform] duration-200 ease-expensive",
+    "hover:bg-gold-deep active:scale-[0.985]",
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold",
+    size === "lg" ? "h-14 px-8 text-[16px]" : "h-11 px-5 text-[14px]",
+    block && "w-full",
+    className,
+  );
+
+  if (!href) {
+    return (
+      <button type="button" onClick={onClick} data-cta={section} className={classes}>
+        {label}
+      </button>
+    );
+  }
+
   return (
-    <a
-      href={href}
-      onClick={onClick}
-      data-cta={section}
-      className={cn(
-        "inline-flex items-center justify-center select-none whitespace-nowrap",
-        "bg-gold text-ink font-sans font-semibold tracking-[0.01em] rounded-[3px]",
-        "transition-[background-color,transform] duration-200 ease-expensive",
-        "hover:bg-gold-deep active:scale-[0.985]",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold",
-        size === "lg" ? "h-14 px-8 text-[16px]" : "h-11 px-5 text-[14px]",
-        block && "w-full",
-        className,
-      )}
-    >
+    <a href={href} onClick={onClick} data-cta={section} className={classes}>
       {label}
     </a>
   );

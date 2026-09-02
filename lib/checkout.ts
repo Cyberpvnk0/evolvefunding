@@ -1,7 +1,7 @@
 import { env } from "@/lib/env";
 
 /**
- * UTM parameters we forward from the landing URL to the Stripe Payment Link.
+ * UTM parameters we forward from the landing URL to the CTA destination.
  * Captured on first load and stored for the session, so the visitor can scroll,
  * open the lightbox, or refresh and still carry their attribution to checkout.
  */
@@ -59,20 +59,24 @@ export function getAttribution(): Attribution {
 }
 
 /**
- * Build the checkout URL for a CTA. Always the same base (from env), with the
- * visitor's UTM params appended plus `client_reference_id` naming the section
- * that sent them, which Stripe stores on the Checkout Session (Dashboard
- * payment detail and `checkout.session.completed`), so you can see which CTA
- * converts. A `client_reference_id` already on the link is left untouched.
+ * Build the destination for a CTA: the URL in NEXT_PUBLIC_CHECKOUT_URL, with
+ * the visitor's UTM params carried over and a `ref` param naming the section
+ * that sent them, so whatever receives the click can attribute it.
+ *
+ * Returns "" when no destination is configured. Callers must handle that:
+ * CtaButton renders an inert button rather than a dead link. Nothing here
+ * throws, so a malformed value can never break a render or the build.
  */
 export function buildCheckoutUrl(section: string, attribution?: Attribution): string {
   const base = env.checkoutUrl;
-  if (!base) return "#checkout-url-not-set";
+  if (!base) return "";
 
   let url: URL;
   try {
     url = new URL(base);
   } catch {
+    // Not an absolute URL. Pass it through untouched so a relative path or a
+    // mailto:/sms: link still works; we just cannot append params to it.
     return base;
   }
 
@@ -80,8 +84,6 @@ export function buildCheckoutUrl(section: string, attribution?: Attribution): st
   for (const [key, value] of Object.entries(attr)) {
     if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
   }
-  if (!url.searchParams.has("client_reference_id")) {
-    url.searchParams.set("client_reference_id", section);
-  }
+  if (!url.searchParams.has("ref")) url.searchParams.set("ref", section);
   return url.toString();
 }
