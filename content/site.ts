@@ -123,8 +123,8 @@ export const hero = {
     label: "Average client jump in 90 days",
   },
   cta: {
-    label: "Start My Repair - $147/mo",
-    subtext: "Cancel anytime. No contract. First results typically in 30-45 days.",
+    label: "Start My Repair – $147/mo",
+    subtext: "Cancel anytime. No contract. First results typically in 30–45 days.",
   },
   /** Trust row under the CTA. Three short items. Editable placeholders. */
   trust: ["500+ items removed", "4.9 rating", "Secure checkout"],
@@ -340,7 +340,7 @@ export const problem = {
 // ---------------------------------------------------------------------------
 
 export const howItWorks = {
-  headline: "Three Steps. No Homework.",
+  headline: "Three Steps. We Handle The Rest.",
   steps: [
     {
       title: "Sign up",
@@ -367,7 +367,7 @@ export const howItWorks = {
 export const included = {
   headline: "What $147 Covers.",
   items: [
-    "Full 3-bureau dispute process, Equifax, Experian, and TransUnion",
+    "Full 3-bureau dispute process: Equifax, Experian, and TransUnion",
     "Unlimited disputes, every 30 days, until every item is resolved",
     "Monthly progress updates with every response from the bureaus",
     "A personal case manager who knows your file by name",
@@ -494,7 +494,7 @@ export const finalCta = {
     label: "Start My Repair Now",
     subtext: "Cancel anytime. No contract.",
   },
-  badges: ["Secure checkout by Stripe", "256-bit encryption", "Cancel anytime"],
+  badges: ["Secure checkout by Stripe", "256-bit encryption", "Month to month"],
   clientCount: {
     // TODO: replace with the real client count.
     value: 1200,
@@ -546,7 +546,9 @@ export const exitIntent = {
 // ---------------------------------------------------------------------------
 
 export const thankYou = {
-  headline: "You're in.",
+  /** Browser tab title. The page is noindex, so this is for the visitor only. */
+  title: "You’re in",
+  headline: "You’re in.",
   subheadline: "Your payment went through. Here is what happens next.",
   nextSteps: [
     {
@@ -575,6 +577,17 @@ export const thankYou = {
     label: "Text us now",
     subtext: "Questions about your intake? We answer fast.",
   },
+} as const;
+
+// ---------------------------------------------------------------------------
+// 404
+// ---------------------------------------------------------------------------
+
+export const notFound = {
+  eyebrow: "404",
+  headline: "That page is not here.",
+  /** {name} is replaced with the brand name. */
+  backLabel: "Back to {name}",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -686,6 +699,7 @@ export const site = {
   footer,
   exitIntent,
   thankYou,
+  notFound,
   disclosures,
   privacy,
   terms,

@@ -28,10 +28,10 @@ All configuration lives in environment variables. Copy `.env.example` to `.env.l
 
 | Variable | Required | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_CHECKOUT_URL` | Yes | Your Stripe Payment Link. Every CTA on the site points here. UTM params and a `ref=<section>` param are appended automatically. |
+| `NEXT_PUBLIC_CHECKOUT_URL` | Yes | Your Stripe Payment Link. Every CTA on the site points here. UTM params and a `client_reference_id=<section>` param are appended automatically. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID. Leave blank to ship no Meta code. |
 | `NEXT_PUBLIC_TIKTOK_PIXEL_ID` | No | TikTok Pixel ID. Leave blank to ship no TikTok code. |
-| `NEXT_PUBLIC_GA4_ID` | No | GA4 measurement ID (`G-XXXXXXX`). Leave blank to ship no GA code. |
+| `NEXT_PUBLIC_GA4_ID` | No | GA4 measurement ID (`G-XXXXXXX`). Leave blank to ship no GA code. The site sends `page_view` itself on every route change, so turn off **Enhanced measurement → Page changes based on browser history events** in the GA4 data stream, otherwise client-side navigations are double-counted. |
 | `GHL_WEBHOOK_URL` | No | GoHighLevel inbound webhook. The exit-intent phone form POSTs here, server-side. If blank, the form still succeeds in the UI but nothing is forwarded. |
 | `NEXT_PUBLIC_SITE_URL` | No | Canonical URL for Open Graph tags, sitemap, and robots. Defaults to `https://evolvefunding.com`. |
 
@@ -39,7 +39,7 @@ The checkout URL is never hardcoded. Search the codebase for `NEXT_PUBLIC_CHECKO
 
 ### Which CTA converted?
 
-Each button appends `ref=<section>` to the checkout link (`hero`, `sticky_bar`, `proof`, `included`, `faq`, `final`). Stripe stores the full URL parameters on the Checkout Session, so you can attribute payments to the section that sent them. UTM params (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`) plus `fbclid`, `ttclid`, and `gclid` are captured on first load, held in sessionStorage, and forwarded on every CTA.
+Each button sets `client_reference_id=<section>` on the checkout link (`hero`, `sticky_bar`, `proof`, `included`, `faq`, `final`). Stripe stores it as the Checkout Session's `client_reference_id` (visible on the payment in the Dashboard and in `checkout.session.completed` webhooks), so you can attribute payments to the section that sent them. UTM params (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`) plus `fbclid`, `ttclid`, and `gclid` are captured on first load, held in sessionStorage, and forwarded on every CTA. Stripe does not store those: it appends the `utm_*` values to the after-payment redirect URL (`/thank-you`) and discards the click IDs, so use the `cta_click` / `checkout_redirect` pixel events for click-level attribution.
 
 ### Events fired
 
@@ -47,7 +47,7 @@ The wrapper in `lib/analytics.ts` fans one `track()` call out to whichever pixel
 
 | Event | When | Meta | TikTok | GA4 |
 | --- | --- | --- | --- | --- |
-| `page_view` | On load | PageView | page | page_view |
+| `page_view` | On every route change | PageView | page | page_view |
 | `scroll_50` | 50% scroll depth | custom | custom | event |
 | `scroll_90` | 90% scroll depth | custom | custom | event |
 | `cta_click` | Any checkout button, with `section` | custom | custom | event |

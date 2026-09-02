@@ -9,10 +9,17 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Cache placeholder media and proof assets aggressively; swap filenames when replacing.
+        // Proof assets are swapped in place under the same filenames (see the
+        // README), so they must revalidate rather than be pinned for a year.
+        // The CDN serves the cached copy instantly and refreshes in the
+        // background, so a replaced photo or hero video goes live on the next
+        // request instead of sticking for returning visitors.
         source: "/proof/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+          },
         ],
       },
     ];

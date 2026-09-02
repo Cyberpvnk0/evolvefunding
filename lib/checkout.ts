@@ -30,8 +30,10 @@ function readStored(): Attribution {
 }
 
 /**
- * Capture UTM and click-id params from the current URL. Call once on mount.
- * Params in the URL win over anything previously stored.
+ * Capture UTM and click-id params from the current URL and persist them.
+ * Idempotent: params in the URL win over anything previously stored, and the
+ * merged result is written back, so it is safe to call from every consumer
+ * (AnalyticsClient on load, each CtaButton on mount) in any effect order.
  */
 export function captureAttribution(): Attribution {
   if (typeof window === "undefined") return {};
@@ -58,8 +60,10 @@ export function getAttribution(): Attribution {
 
 /**
  * Build the checkout URL for a CTA. Always the same base (from env), with the
- * visitor's UTM params appended plus a `ref` param naming the section that
- * sent them, so you can see in Stripe which CTA converts.
+ * visitor's UTM params appended plus `client_reference_id` naming the section
+ * that sent them, which Stripe stores on the Checkout Session (Dashboard
+ * payment detail and `checkout.session.completed`), so you can see which CTA
+ * converts. A `client_reference_id` already on the link is left untouched.
  */
 export function buildCheckoutUrl(section: string, attribution?: Attribution): string {
   const base = env.checkoutUrl;
@@ -76,6 +80,8 @@ export function buildCheckoutUrl(section: string, attribution?: Attribution): st
   for (const [key, value] of Object.entries(attr)) {
     if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
   }
-  url.searchParams.set("ref", section);
+  if (!url.searchParams.has("client_reference_id")) {
+    url.searchParams.set("client_reference_id", section);
+  }
   return url.toString();
 }

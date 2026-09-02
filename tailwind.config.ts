@@ -55,11 +55,18 @@ const config: Config = {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        // Transform-only reveal for the hero h1: never paints at opacity 0,
+        // so it stays an LCP candidate at first contentful paint.
+        "slide-up": {
+          from: { transform: "translateY(18px)" },
+          to: { transform: "translateY(0)" },
+        },
       },
       animation: {
         // CSS-driven reveals for above-the-fold content (no hydration wait).
         "fade-up": "fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both",
         "fade-in": "fade-in 1.2s ease-out both",
+        "slide-up": "slide-up 1s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

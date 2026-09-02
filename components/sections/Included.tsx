@@ -46,8 +46,8 @@ export default function Included() {
 
             {/* Value anchor */}
             <div className="mt-2 border-t border-line pt-6 sm:pt-8">
-              <p className="text-[15px] text-mute">{included.anchor.lead}</p>
-              <p className="mt-2 font-display text-[30px] leading-snugger tracking-tightest text-bone sm:text-4xl">
+              <p className="text-[15px] text-mute text-balance">{included.anchor.lead}</p>
+              <p className="mt-2 font-display text-[28px] leading-snugger tracking-tightest text-bone sm:text-4xl lg:text-5xl">
                 {included.anchor.close}
               </p>
             </div>

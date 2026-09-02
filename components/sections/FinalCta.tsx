@@ -12,10 +12,19 @@ import { finalCta } from "@/content/site";
  * Below the fold, so the photo is lazy (the hero owns the only priority image)
  * and the copy rises with <FadeUp /> instead of the CSS reveal. The sticky bar
  * watches `#final-cta` and hides itself while this is on screen.
+ *
+ * The badges and client count sit in the bottom ~100px of the frame (items-end
+ * on a full-viewport section), so they get an unshrunk viewport root: FadeUp's
+ * default -12% bottom margin would keep them from ever intersecting while the
+ * section is framed, and the count-up would only fire once the visitor had
+ * scrolled on into the footer.
  */
 export default function FinalCta() {
-  // "Join {count}+ clients" -> ["Join ", "+ clients"]; the counter sits between.
-  const [countBefore, countAfter = ""] = finalCta.clientCount.label.split("{count}");
+  // "Join {count}+ clients" -> "Join ", "+", " clients"; anything glued to
+  // {count} (the "+") belongs to the numeral and is set with it.
+  const [countBefore, rest = ""] = finalCta.clientCount.label.split("{count}");
+  const countSuffix = rest.match(/^\S*/)?.[0] ?? "";
+  const countAfter = rest.slice(countSuffix.length);
 
   return (
     <section
@@ -30,7 +39,7 @@ export default function FinalCta() {
           alt={finalCta.imageAlt}
           fill
           loading="lazy"
-          sizes="100vw"
+          sizes="(orientation: portrait) 178vh, 100vw"
           quality={70}
           className="object-cover"
         />
@@ -41,7 +50,7 @@ export default function FinalCta() {
         <FadeUp>
           <h2
             id="final-cta-headline"
-            className="max-w-[12ch] font-display text-[42px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
+            className="max-w-[16ch] font-display text-[42px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
           >
             {finalCta.headline}
           </h2>
@@ -60,25 +69,10 @@ export default function FinalCta() {
         </FadeUp>
 
         {/* Trust badges */}
-        <FadeUp delay={0.18}>
+        <FadeUp delay={0.18} viewport={{ once: true, margin: "0px" }}>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 sm:mt-10" aria-label="Trust">
-            {finalCta.badges.map((badge, i) => (
+            {finalCta.badges.map((badge) => (
               <li key={badge} className="eyebrow flex items-center gap-2 text-bone/70">
-                {i === 0 && (
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.25}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-3.5 w-3.5 shrink-0"
-                  >
-                    <rect x="3" y="7" width="10" height="7" rx="1" />
-                    <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
-                  </svg>
-                )}
                 <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
                 {badge}
               </li>
@@ -87,16 +81,13 @@ export default function FinalCta() {
         </FadeUp>
 
         {/* Client count */}
-        <FadeUp delay={0.24}>
+        <FadeUp delay={0.24} viewport={{ once: true, margin: "0px" }}>
           <p className="mt-8 text-[14px] text-mute sm:mt-10">
             {countBefore}
-            <CountUp
-              startOnView
-              from={0}
-              to={finalCta.clientCount.value}
-              thousands
-              className="font-display text-2xl leading-none tracking-tightest text-gold"
-            />
+            <span className="font-display text-2xl leading-none tracking-tightest text-gold">
+              <CountUp startOnView from={0} to={finalCta.clientCount.value} thousands />
+              {countSuffix}
+            </span>
             {countAfter}
           </p>
         </FadeUp>

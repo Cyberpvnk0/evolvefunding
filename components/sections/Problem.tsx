@@ -25,7 +25,7 @@ export default function Problem() {
         <div className="space-y-4 sm:space-y-5 lg:space-y-6">
           {problem.lines.map((line, i) => (
             <FadeUp key={line} delay={i * 0.08}>
-              <p className="font-display text-[34px] leading-snugger tracking-tightest text-bone sm:text-5xl lg:text-6xl">
+              <p className="font-display text-[34px] leading-snugger tracking-tightest text-bone text-balance sm:text-5xl lg:text-6xl">
                 {line}
               </p>
             </FadeUp>

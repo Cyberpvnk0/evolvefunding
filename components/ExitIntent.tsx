@@ -13,12 +13,10 @@ type Status = "idle" | "submitting" | "sent" | "error";
 /** Session flags. Either one set means the slide-up never shows again this session. */
 const DISMISSED_KEY = "ef_exit_dismissed";
 const SENT_KEY = "ef_lead_sent";
-/** How long to wait before trying again when another dialog is already open. */
+/** How long to wait before trying again when a dialog is already open. */
 const RETRY_MS = 10_000;
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const FOCUSABLE =
-  'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /** Slide up from below the viewport. */
 const slide: Variants = {
@@ -60,14 +58,23 @@ function normalizePhone(raw: string): string {
  * Desktop (fine pointer, >= 1024px): shows when the cursor leaves through the
  * top of the viewport. Everything else: shows after `exitIntent.mobileDelayMs`.
  * At most once per page load, never after it has been dismissed or a lead has
- * been sent this session, and never on top of another open dialog (it waits
- * ten seconds and tries again).
+ * been sent this session, and never on top of an open dialog (it waits ten
+ * seconds and tries again).
  *
- * Portalled to <body> so a transformed ancestor can never turn `fixed` into
- * `absolute`. Slides up from the bottom edge (a fade with reduced motion) over
- * a dim backdrop that closes on tap. role="dialog" + aria-modal; focus lands on
- * the input, Tab stays inside, Escape closes, and focus returns to wherever it
- * was. Body scroll is locked while open.
+ * A sheet, not a popup: no backdrop, no scroll lock, no focus trap. The page
+ * stays usable behind it. Portalled to <body> so a transformed ancestor can
+ * never turn `fixed` into `absolute`. Slides up from the bottom edge (a fade
+ * with reduced motion) inside a polite live region that is mounted ahead of
+ * time, so screen readers hear it appear. role="region", labelled by its
+ * headline. On desktop exit intent focus lands on the input (the cursor has
+ * already left the page); on the mobile timer focus stays where it is, so
+ * nothing is stolen mid-scroll and Android does not raise the keyboard
+ * unasked. Close button or Escape dismisses; focus goes back to where it was
+ * only if it was inside the sheet.
+ *
+ * Sits under the sticky bar (z-30 < z-40). While that bar is mounted on
+ * phones, the sheet reserves the bar's height in bottom padding so Start Now
+ * stays reachable above the fold of the sheet.
  *
  * Submits to /api/lead, which forwards to the GHL webhook server-side.
  */
@@ -79,7 +86,7 @@ export default function ExitIntent() {
   const [status, setStatus] = useState<Status>("idle");
   const sourceRef = useRef<LeadSource>("timer");
   const openerRef = useRef<HTMLElement | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -92,7 +99,9 @@ export default function ExitIntent() {
     setOpen(false);
     const opener = openerRef.current;
     openerRef.current = null;
-    if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
+    // Hand focus back only when it is inside the sheet and about to be lost with it.
+    const inside = panelRef.current?.contains(document.activeElement) ?? false;
+    if (inside && opener && document.contains(opener)) opener.focus({ preventScroll: true });
   }, []);
 
   // Arm the trigger: mouseleave through the top on desktop, a timer elsewhere.
@@ -115,7 +124,7 @@ export default function ExitIntent() {
         teardown();
         return;
       }
-      // Another dialog (the proof lightbox) is open. Re-arm and try again later.
+      // A dialog (the proof lightbox) is open. Re-arm and try again later.
       if (document.querySelector('[aria-modal="true"]')) {
         window.clearTimeout(timer);
         timer = window.setTimeout(() => attempt(source), RETRY_MS);
@@ -141,44 +150,24 @@ export default function ExitIntent() {
     return teardown;
   }, []);
 
-  // While open: lock scroll, focus the input, handle Escape and keep Tab inside.
+  // While open: focus the input on desktop exit intent only, and close on Escape.
   useEffect(() => {
     if (!open) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    inputRef.current?.focus({ preventScroll: true });
+    // Timer path (touch devices): leave focus alone. A programmatic focus would
+    // steal it mid-scroll and raise the soft keyboard on Android without a tap.
+    if (sourceRef.current === "exit_intent") inputRef.current?.focus({ preventScroll: true });
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        close();
-        return;
-      }
-      if (e.key !== "Tab" || !dialogRef.current) return;
-
-      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
-      if (!dialogRef.current.contains(active)) {
-        e.preventDefault();
-        first.focus();
-      } else if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      if (e.key !== "Escape") return;
+      // A real dialog on top (the proof lightbox) owns Escape while it is open.
+      if (document.querySelector('[aria-modal="true"]')) return;
+      e.preventDefault();
+      close();
     };
 
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, close]);
 
   // The input unmounts on success; hand focus to the close button so it is not lost.
@@ -223,116 +212,107 @@ export default function ExitIntent() {
   if (!mounted) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          key="exit-intent-backdrop"
-          aria-hidden="true"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 0.4, ease: "easeOut" }}
-          onClick={close}
-          className="fixed inset-0 z-[60] bg-ink/60"
-        />
-      )}
-      {open && (
-        <motion.div
-          key="exit-intent-panel"
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="exit-intent-title"
-          variants={reduce ? toggle : slide}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: reduce ? 0 : 0.5, ease: EASE }}
-          className="pb-safe fixed inset-x-0 bottom-0 z-[60] max-h-[90svh] overflow-y-auto rounded-t-[6px] border-t border-line bg-ink-2 sm:mx-auto sm:max-w-lg sm:border-x"
-        >
-          <div className="relative px-5 pb-6 pt-5">
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={close}
-              aria-label="Close"
-              className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-[3px] text-bone/70 transition-colors duration-200 ease-expensive hover:text-bone"
-            >
-              <svg
-                aria-hidden="true"
-                width="22"
-                height="22"
-                viewBox="0 0 22 22"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.25}
-                strokeLinecap="round"
+    // The live region exists before the sheet does, so its arrival is announced.
+    <div aria-live="polite">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="exit-intent-panel"
+            ref={panelRef}
+            role="region"
+            aria-labelledby="exit-intent-title"
+            variants={reduce ? toggle : slide}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: reduce ? 0 : 0.5, ease: EASE }}
+            className="pb-safe fixed inset-x-0 bottom-0 z-30 max-h-[90svh] overflow-y-auto rounded-t-[3px] border-t border-line bg-ink-2 sm:mx-auto sm:max-w-lg sm:border-x"
+          >
+            {/* On phones, while the sticky bar is mounted, its 56px sits over this padding. */}
+            <div className="relative px-5 pb-6 pt-5 transition-[padding-bottom] duration-500 ease-expensive motion-reduce:transition-none max-sm:[body:has([data-cta^=sticky])_&]:pb-20">
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={close}
+                aria-label="Close"
+                className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-[3px] text-bone/70 transition-colors duration-200 ease-expensive hover:text-bone"
               >
-                <path d="M4 4l14 14M18 4L4 18" />
-              </svg>
-            </button>
+                <svg
+                  aria-hidden="true"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.25}
+                  strokeLinecap="round"
+                >
+                  <path d="M4 4l14 14M18 4L4 18" />
+                </svg>
+              </button>
 
-            <p className="eyebrow">{brand.name}</p>
-            <h2
-              id="exit-intent-title"
-              className="mt-3 pr-10 font-display text-[26px] leading-snugger tracking-tightest text-bone sm:text-3xl"
-            >
-              {exitIntent.headline}
-            </h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-mute">{exitIntent.body}</p>
+              <p className="eyebrow">{brand.name}</p>
+              <h2
+                id="exit-intent-title"
+                className="mt-3 pr-10 font-display text-[26px] leading-snugger tracking-tightest text-bone sm:text-3xl"
+              >
+                {exitIntent.headline}
+              </h2>
+              <p className="mt-3 text-[15px] leading-relaxed text-mute">{exitIntent.body}</p>
 
-            {status === "sent" ? (
-              <p role="status" className="mt-6 flex items-center gap-2 text-[15px] text-bone">
-                <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-gold" />
-                {exitIntent.success}
-              </p>
-            ) : (
-              <form onSubmit={onSubmit} noValidate className="mt-6">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <label htmlFor="exit-intent-phone" className="sr-only">
-                    {exitIntent.placeholder}
-                  </label>
-                  <input
-                    ref={inputRef}
-                    id="exit-intent-phone"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    name="phone"
-                    placeholder={exitIntent.placeholder}
-                    required
-                    value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value);
-                      if (status === "error") setStatus("idle");
-                    }}
-                    aria-invalid={status === "error"}
-                    aria-describedby={status === "error" ? "exit-intent-error" : undefined}
-                    // 16px so iOS does not zoom the page when the field is focused.
-                    className="h-12 w-full min-w-0 flex-1 rounded-[3px] border border-line bg-ink px-4 text-[16px] text-bone placeholder:text-mute/70 focus:border-gold focus:shadow-gold focus:outline-none"
-                  />
-                  <button
-                    type="submit"
-                    disabled={status === "submitting"}
-                    className="inline-flex h-12 shrink-0 select-none items-center justify-center whitespace-nowrap rounded-[3px] bg-gold px-6 font-sans text-[16px] font-semibold tracking-[0.01em] text-ink transition-[background-color,opacity] duration-200 ease-expensive hover:bg-gold-deep disabled:cursor-wait disabled:opacity-70 disabled:hover:bg-gold"
-                  >
-                    {exitIntent.button}
-                  </button>
-                </div>
+              {status === "sent" ? (
+                <p role="status" className="mt-6 flex items-center gap-2 text-[15px] text-bone">
+                  <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-gold" />
+                  {exitIntent.success}
+                </p>
+              ) : (
+                <form onSubmit={onSubmit} noValidate className="mt-6">
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <label htmlFor="exit-intent-phone" className="sr-only">
+                      {exitIntent.placeholder}
+                    </label>
+                    <input
+                      ref={inputRef}
+                      id="exit-intent-phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      name="phone"
+                      placeholder={exitIntent.placeholder}
+                      required
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (status === "error") setStatus("idle");
+                      }}
+                      aria-invalid={status === "error"}
+                      aria-describedby={status === "error" ? "exit-intent-error" : undefined}
+                      // 16px so iOS does not zoom the page when the field is focused.
+                      className="h-12 w-full min-w-0 rounded-[3px] border border-line bg-ink px-4 text-[16px] text-bone placeholder:text-mute focus:border-gold focus:shadow-gold focus:outline-none sm:flex-1"
+                    />
+                    <button
+                      type="submit"
+                      disabled={status === "submitting"}
+                      className="inline-flex h-12 shrink-0 select-none items-center justify-center whitespace-nowrap rounded-[3px] bg-gold px-6 font-sans text-[16px] font-semibold tracking-[0.01em] text-ink transition-[background-color,opacity] duration-200 ease-expensive hover:bg-gold-deep disabled:cursor-wait disabled:opacity-70 disabled:hover:bg-gold"
+                    >
+                      {exitIntent.button}
+                    </button>
+                  </div>
 
-                {status === "error" && (
-                  <p id="exit-intent-error" role="alert" className="mt-2 text-[13px] text-bone">
-                    {exitIntent.error}
-                  </p>
-                )}
+                  {status === "error" && (
+                    <p id="exit-intent-error" role="alert" className="mt-2 text-[13px] text-bone">
+                      {exitIntent.error}
+                    </p>
+                  )}
 
-                <p className="mt-3 text-[11px] leading-snug text-mute/70">{exitIntent.consent}</p>
-              </form>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+                  <p className="mt-3 text-[11px] leading-snug text-mute/80">{exitIntent.consent}</p>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>,
     document.body,
   );
 }

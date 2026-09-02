@@ -81,13 +81,13 @@ export default function TestimonialCarousel({ items }: TestimonialCarouselProps)
         ref={trackRef}
         role="list"
         onScroll={schedule}
-        className="relative -mx-5 flex snap-x snap-mandatory gap-x-5 overflow-x-auto overscroll-x-contain scroll-px-5 px-5 scrollbar-none sm:-mx-8 sm:gap-x-10 sm:scroll-px-8 sm:px-8"
+        className="relative -mx-5 flex snap-x snap-mandatory gap-x-8 overflow-x-auto overscroll-x-contain scroll-px-5 px-5 scrollbar-none sm:-mx-8 sm:gap-x-12 sm:scroll-px-8 sm:px-8 lg:gap-x-14"
       >
         {items.map((t) => (
-          <li key={t.id} className="flex w-full shrink-0 snap-start sm:w-[calc(50%-1.25rem)]">
+          <li key={t.id} className="flex w-full shrink-0 snap-start sm:w-[calc(50%-1.5rem)] lg:w-[calc(50%-1.75rem)]">
             <figure className="flex w-full flex-col border-t border-line pt-8 sm:pt-10">
               {/* The opening mark hangs into the margin so the first letter sits on the left edge. */}
-              <blockquote className="font-display text-[26px] leading-snugger tracking-tightest text-bone [text-indent:-0.35em] sm:text-[30px] lg:text-4xl">
+              <blockquote className="font-display text-[28px] leading-snugger tracking-tightest text-bone [text-indent:-0.35em] sm:text-4xl lg:text-5xl">
                 <p>&ldquo;{t.quote}&rdquo;</p>
               </blockquote>
 

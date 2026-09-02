@@ -62,24 +62,63 @@ export default function CountUp({
     if (!el) return;
     if (typeof IntersectionObserver === "undefined") return run();
 
+    // run() returns the rAF canceller; hold it so unmounting mid-count stops
+    // the loop instead of leaving it to tick against an unmounted component.
+    let stopCount: (() => void) | void;
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          run();
+          stopCount = run();
           io.disconnect();
         }
       },
       { threshold: 0.4 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      stopCount?.();
+    };
   }, [from, to, durationMs, reduce, startOnView]);
 
   const fmt = (n: number) => (thousands ? n.toLocaleString("en-US") : String(n));
 
+  // Instrument Serif ships no tabular figures, so `.tabular` is inert and the
+  // digits have different advance widths ("1" is much narrower than "0").
+  // Two things follow from that:
+  //
+  //  1. Each digit is boxed to 1ch, which the CSS spec defines as the advance
+  //     width of "0". Every digit then occupies the same width, so the number
+  //     never jitters mid-count and, at rest, it measures exactly as wide as
+  //     the all-zero ghost below (no gap before whatever follows it).
+  //  2. A hidden ghost of the widest value reserves the final width up front,
+  //     so a count whose digit count grows (0 to 1,200) never pushes the text
+  //     beside it sideways.
+  //
+  // Both layers are hidden from assistive tech; a visually hidden span
+  // announces the final value, whatever frame the animation is on.
+  const longest = fmt(from).length > fmt(to).length ? fmt(from) : fmt(to);
+  const ghost = longest.replace(/\d/g, "0");
+  const boxed = (text: string) =>
+    text.split("").map((char, i) =>
+      /\d/.test(char) ? (
+        <span key={i} className="inline-block w-[1ch] text-center">
+          {char}
+        </span>
+      ) : (
+        <span key={i}>{char}</span>
+      ),
+    );
+
   return (
-    <span ref={ref} className={cn("tabular", className)} aria-label={fmt(to)}>
-      {fmt(value)}
+    <span ref={ref} className={cn("tabular inline-grid", className)}>
+      <span aria-hidden="true" className="invisible col-start-1 row-start-1">
+        {boxed(ghost)}
+      </span>
+      <span aria-hidden="true" className="col-start-1 row-start-1">
+        {boxed(fmt(value))}
+      </span>
+      <span className="sr-only select-none">{fmt(to)}</span>
     </span>
   );
 }

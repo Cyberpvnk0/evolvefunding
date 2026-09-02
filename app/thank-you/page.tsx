@@ -5,7 +5,7 @@ import TextButton from "@/components/ui/TextButton";
 import { brand, thankYou } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: `You're in | ${brand.name}`,
+  title: `${thankYou.title} | ${brand.name}`,
   robots: { index: false, follow: false },
 };
 

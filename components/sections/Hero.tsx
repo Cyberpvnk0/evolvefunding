@@ -9,7 +9,10 @@ import { hero } from "@/content/site";
  * subheadline, live score counter, gold CTA, trust row.
  *
  * Above-the-fold content uses CSS `animate-fade-up` (not <FadeUp />) so the
- * first paint never waits for hydration.
+ * first paint never waits for hydration. The h1 uses the transform-only
+ * `animate-slide-up` instead: a fade from opacity 0 keeps it out of the LCP
+ * candidates (the full-viewport poster is excluded from LCP by the browser),
+ * so the h1 must paint visible at first frame to be the LCP element.
  */
 export default function Hero() {
   return (
@@ -18,25 +21,25 @@ export default function Hero() {
       aria-labelledby="hero-headline"
       className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink"
     >
-      {/* Photography layer: poster (LCP, preloaded) with the video fading in over it. */}
+      {/* Photography layer: preloaded poster with the video fading in over it. */}
       <div className="vignette absolute inset-0">
         <Image
           src={hero.poster}
           alt={hero.posterAlt}
           fill
           priority
-          sizes="100vw"
+          sizes="(orientation: portrait) 178vh, 100vw"
           quality={70}
           className="object-cover"
         />
-        <HeroVideo src={hero.video} poster={hero.poster} />
+        <HeroVideo src={hero.video} />
       </div>
 
       {/* Copy layer */}
       <div className="relative z-10 mx-auto w-full max-w-page px-5 pb-12 pt-28 sm:px-8 sm:pb-16 lg:pb-24">
         <h1
           id="hero-headline"
-          className="animate-fade-up max-w-[11ch] font-display text-[46px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
+          className="animate-slide-up max-w-[16ch] font-display text-[46px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
         >
           {hero.headline}
         </h1>

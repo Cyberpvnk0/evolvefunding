@@ -22,7 +22,7 @@ export default function ScoreStrip() {
         <FadeUp>
           <h2
             id="scores-headline"
-            className="max-w-[12ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
+            className="max-w-[16ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
           >
             {proof.scoreStripHeadline}
           </h2>
@@ -97,12 +97,11 @@ function ScoreHalf({ side, entry, label, countFrom }: ScoreHalfProps) {
           <CountUp from={countFrom} to={entry.score} startOnView className={scoreClass} />
         )}
       </p>
+      {/* Explicit spaces so the label can break at the separator; the date
+          never wraps mid-string, so a long month drops whole to line two. */}
       <p className="eyebrow mt-1.5">
-        {side}
-        <span aria-hidden="true" className="mx-1.5">
-          &middot;
-        </span>
-        {entry.date}
+        {side} <span aria-hidden="true">&middot;</span>{" "}
+        <span className="whitespace-nowrap">{entry.date}</span>
       </p>
     </div>
   );

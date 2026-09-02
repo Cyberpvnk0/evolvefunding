@@ -1,17 +1,27 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { captureAttribution } from "@/lib/checkout";
 
 /**
- * Fires page_view once, captures UTM attribution, and watches scroll depth
- * for scroll_50 and scroll_90 (each fired at most once per page load).
+ * Captures UTM attribution once per hard load, then fires page_view and
+ * watches scroll depth for scroll_50 and scroll_90 (each fired at most once
+ * per route). Keyed on the pathname so client-side navigations to the legal
+ * pages and back are counted too.
  */
 export default function AnalyticsClient() {
+  const pathname = usePathname();
+
+  // UTM/click ids only exist on the landing URL; capture once per hard load.
   useEffect(() => {
     captureAttribution();
-    track("page_view", { path: window.location.pathname });
+  }, []);
+
+  // One page_view and a fresh set of scroll-depth flags per route.
+  useEffect(() => {
+    track("page_view", { path: pathname });
 
     const fired = { 50: false, 90: false };
     let ticking = false;
@@ -41,7 +51,7 @@ export default function AnalyticsClient() {
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname]);
 
   return null;
 }

@@ -59,9 +59,7 @@ export function track(event: AnalyticsEvent, params: EventParams = {}): void {
   try {
     if (window.fbq) {
       const std = META_EVENT[event];
-      if (event === "page_view") {
-        // PageView is fired by the pixel bootstrap; skip a duplicate.
-      } else if (std) {
+      if (std) {
         window.fbq("track", std, payload);
       } else {
         window.fbq("trackCustom", event, payload);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { track } from "@/lib/analytics";
-import { buildCheckoutUrl } from "@/lib/checkout";
+import { buildCheckoutUrl, captureAttribution } from "@/lib/checkout";
 import { cn } from "@/lib/cn";
 
 interface CtaButtonProps {
@@ -20,7 +20,9 @@ interface CtaButtonProps {
  *
  * Renders as a real <a> so it works before hydration. The href starts as the
  * base checkout URL and is upgraded with the visitor's UTM params after mount
- * so server and client markup match.
+ * so server and client markup match. The params are read straight from the
+ * landing URL (captureAttribution is idempotent) rather than from storage, so
+ * the first ad-click visit carries them regardless of effect order.
  */
 export default function CtaButton({
   section,
@@ -32,7 +34,7 @@ export default function CtaButton({
   const [href, setHref] = useState(() => buildCheckoutUrl(section, {}));
 
   useEffect(() => {
-    setHref(buildCheckoutUrl(section));
+    setHref(buildCheckoutUrl(section, captureAttribution()));
   }, [section]);
 
   const onClick = () => {
