@@ -61,8 +61,12 @@ export interface FaqItem {
 
 /** One figure in the hero's stat bar. */
 export interface HeroStat {
-  /** The figure exactly as it should read, e.g. "724", "$3M", "4.9". */
+  /** The figure itself, digits only when it animates: "150", "$3M", "4.9". */
   value: string;
+  /** Rendered before the figure and left out of the count, e.g. "+" or "$". */
+  prefix?: string;
+  /** Rendered after the figure, e.g. "%" or "pts". */
+  suffix?: string;
   /** Keep these a similar length: even labels are what make the row even. */
   label: string;
   /**
@@ -126,7 +130,7 @@ export const brand = {
   /** Used in the <title> and Open Graph tags. */
   seoTitle: "Evolve Funding | Credit Repair That Ends In An Approval",
   seoDescription:
-    "Real clients. Real scores. 550 to 720+ in a few months, then approved for the car, the house, the funding. $147 a month. Cancel anytime.",
+    "Real clients. Real scores. A 150-point average jump, then approved for the car, the house, the funding. $147 a month. Cancel anytime.",
   ogImage: "/proof/og-image.jpg",
 } as const;
 
@@ -179,10 +183,13 @@ export const hero = {
    */
   stats: [
     {
-      value: "724",
+      // The average GAIN, not an ending score. Counting up from zero shows the
+      // gain accumulating, which is the thing being claimed.
+      value: "150",
+      prefix: "+",
+      // TODO: the 150 is confirmed; confirm the 90-day window before launch.
       label: "Average 90-day jump",
-      // TODO: confirm the real average before launch.
-      countFrom: 550,
+      countFrom: 0,
       durationMs: 2000,
     },
     { value: "$3M", label: "Items removed monthly" },

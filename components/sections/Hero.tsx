@@ -112,6 +112,7 @@ export default function Hero() {
             return (
               <li key={stat.label} className="flex flex-col items-center px-2 py-3.5 text-center sm:px-4 sm:py-4">
                 <span className="font-display text-[26px] font-extrabold leading-none tracking-tightest text-gold sm:text-[32px]">
+                  {stat.prefix}
                   {animates ? (
                     <CountUp
                       from={stat.countFrom as number}
@@ -121,6 +122,7 @@ export default function Hero() {
                   ) : (
                     stat.value
                   )}
+                  {stat.suffix}
                 </span>
                 <span className="mt-2 text-[10px] font-semibold uppercase leading-tight tracking-[0.07em] text-mute sm:text-[11px]">
                   {stat.label}
