@@ -1,36 +1,32 @@
 import CtaButton from "@/components/ui/CtaButton";
 import FadeUp from "@/components/motion/FadeUp";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { hero, included, offer } from "@/content/site";
 
 /**
- * 6. WHAT'S INCLUDED. Headline, then one dark card: the inclusions as a
- * hairline-separated list with a gold dot on each row, a hairline, the value
- * anchor (what others charge, what you pay), and a checkout button.
+ * 6. WHAT'S INCLUDED. One raised card, centred: the inclusions as a
+ * hairline-separated list, the value anchor, then a checkout button.
  *
- * The card is a single surface, not a grid. Everything inside it is server
- * rendered; only the fade-in wrapper and the button run on the client.
+ * A single surface, not a grid. The card carries the `.surface` treatment (top
+ * rim light, vertical gradient, wide soft shadow) and sits over a faint pool of
+ * warm light, so the offer visibly lifts off the page instead of lying flat on
+ * it. The rows keep their text left-aligned inside the centred card: a list of
+ * six differing lengths is far easier to scan ragged-right than centred.
  */
 export default function Included() {
   return (
     <section
       id="included"
       aria-labelledby="included-headline"
-      className="px-5 py-20 sm:px-8 sm:py-28 lg:py-36"
+      className="light-pool relative overflow-hidden px-5 py-20 sm:px-8 sm:py-28 lg:py-36"
     >
-      <div className="mx-auto max-w-page">
+      <div className="relative mx-auto max-w-page">
         <FadeUp>
-          <h2
-            id="included-headline"
-            className="max-w-[12ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
-          >
-            {included.headline}
-          </h2>
-          <div className="rule-gold mt-6" />
+          <SectionHeading id="included-headline" headline={included.headline} />
         </FadeUp>
 
         <FadeUp delay={0.08}>
-          <div className="mt-10 max-w-2xl rounded-[3px] border border-line bg-ink-2 p-6 sm:mt-14 sm:p-10">
-            {/* Inclusions */}
+          <div className="surface mx-auto mt-10 max-w-2xl rounded-[3px] p-6 sm:mt-14 sm:p-10">
             <ul>
               {included.items.map((item) => (
                 <li
@@ -45,15 +41,15 @@ export default function Included() {
             </ul>
 
             {/* Value anchor */}
-            <div className="mt-2 border-t border-line pt-6 sm:pt-8">
+            <div className="mt-2 border-t border-line pt-7 text-center sm:pt-9">
               <p className="text-[15px] text-mute text-balance">{included.anchor.lead}</p>
-              <p className="mt-2 font-display text-[28px] leading-snugger tracking-tightest text-bone sm:text-4xl lg:text-5xl">
+              <p className="mt-2 font-display text-[30px] leading-snugger tracking-tightest text-bone sm:text-4xl lg:text-5xl">
                 {included.anchor.close}
               </p>
             </div>
 
             {/* Checkout */}
-            <div className="mt-8">
+            <div className="mt-8 flex flex-col items-center">
               <CtaButton section="included" label={hero.cta.label} block className="sm:w-auto" />
               <p className="mt-3 text-[13px] leading-snug text-mute">{offer.cancelLine}</p>
             </div>

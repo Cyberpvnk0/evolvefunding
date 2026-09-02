@@ -77,7 +77,7 @@ export default function VslPlayer({ vsl, priority = false }: VslPlayerProps) {
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-[3px] border border-line bg-ink-2"
+      className="surface relative w-full overflow-hidden rounded-[3px]"
       style={{ aspectRatio: vsl.aspect }}
     >
       {/* Self-hosted: mounted from the start, but preload="none" means no

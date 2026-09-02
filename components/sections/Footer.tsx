@@ -15,9 +15,9 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-line px-5 pb-24 pt-14 sm:px-8 sm:pb-16 sm:pt-16">
-      <div className="mx-auto max-w-page">
+      <div className="mx-auto flex max-w-page flex-col items-center text-center">
         {/* Brand + contact */}
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+        <div className="flex flex-col items-center gap-y-2">
           <p className="font-display text-xl text-bone">{brand.name}</p>
           <a
             href={`mailto:${brand.email}`}
@@ -28,7 +28,7 @@ export default function Footer() {
         </div>
 
         {/* Legal links */}
-        <ul className="mt-6 flex flex-wrap gap-x-6" aria-label="Legal">
+        <ul className="mt-6 flex flex-wrap justify-center gap-x-6" aria-label="Legal">
           {footer.links.map((link) => (
             <li key={link.href}>
               <Link

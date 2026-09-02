@@ -30,7 +30,7 @@ export default function FinalCta() {
     <section
       id="final-cta"
       aria-labelledby="final-cta-headline"
-      className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink"
+      className="relative flex min-h-[100svh] items-center overflow-hidden bg-ink"
     >
       {/* Photography layer */}
       <div className="vignette absolute inset-0">
@@ -46,31 +46,31 @@ export default function FinalCta() {
       </div>
 
       {/* Copy layer */}
-      <div className="relative z-10 mx-auto w-full max-w-page px-5 pb-12 pt-28 sm:px-8 sm:pb-16 lg:pb-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-page flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20">
         <FadeUp>
           <h2
             id="final-cta-headline"
-            className="max-w-[16ch] font-display text-[42px] leading-display tracking-tightest text-bone sm:text-7xl lg:text-8xl"
+            className="max-w-[15ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-[64px] lg:text-[76px]"
           >
             {finalCta.headline}
           </h2>
         </FadeUp>
 
         <FadeUp delay={0.06}>
-          <p className="mt-5 max-w-[34rem] text-[16px] leading-relaxed text-bone/80 sm:mt-6 sm:text-lg">
+          <p className="mt-5 max-w-[46ch] text-[16px] leading-relaxed text-bone/80 sm:mt-6 sm:text-lg">
             {finalCta.body}
           </p>
         </FadeUp>
 
         {/* Primary CTA */}
-        <FadeUp delay={0.12} className="mt-8 max-w-md sm:mt-10">
+        <FadeUp delay={0.12} className="mt-8 flex w-full max-w-md flex-col items-center sm:mt-10">
           <CtaButton section="final" label={finalCta.cta.label} block className="sm:w-auto" />
           <p className="mt-3 text-[13px] leading-snug text-mute">{finalCta.cta.subtext}</p>
         </FadeUp>
 
         {/* Trust badges */}
         <FadeUp delay={0.18} viewport={{ once: true, margin: "0px" }}>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 sm:mt-10" aria-label="Trust">
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 sm:mt-10" aria-label="Trust">
             {finalCta.badges.map((badge) => (
               <li key={badge} className="eyebrow flex items-center gap-2 text-bone/70">
                 <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />

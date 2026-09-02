@@ -7,6 +7,7 @@ import HowItWorks from "@/components/sections/HowItWorks";
 import Included from "@/components/sections/Included";
 import Testimonials from "@/components/sections/Testimonials";
 import Faq from "@/components/sections/Faq";
+import Guarantee from "@/components/sections/Guarantee";
 import FinalCta from "@/components/sections/FinalCta";
 import Footer from "@/components/sections/Footer";
 import ExitIntent from "@/components/ExitIntent";
@@ -28,6 +29,7 @@ export default function Page() {
         <Included />
         <Testimonials />
         <Faq />
+        <Guarantee />
         <FinalCta />
       </main>
       <Footer />

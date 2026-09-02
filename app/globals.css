@@ -5,6 +5,10 @@
 @layer base {
   :root {
     color-scheme: dark;
+    /* One light source, high above the page. Every raised surface below is lit
+       from this direction, which is what stops a dark page reading as flat. */
+    --rim: rgba(242, 238, 230, 0.07);
+    --rim-strong: rgba(242, 238, 230, 0.12);
   }
 
   html {
@@ -15,8 +19,26 @@
 
   body {
     @apply bg-ink text-bone font-sans antialiased;
-    font-feature-settings: "ss01", "cv11", "liga";
+    /* Manrope has no ss01/ss02; enabling Inter's sets here distorted spacing. */
+    font-feature-settings: "liga", "calt";
     text-rendering: optimizeLegibility;
+    position: relative;
+  }
+
+  /**
+   * Film grain over the whole page. Flat #0A0A0A reads as cheap because a real
+   * surface is never perfectly uniform; a trace of noise gives the black a
+   * texture to catch light on. Fixed, non-interactive, and about 1KB inline, so
+   * it costs one paint and no requests.
+   */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 
   ::selection {
@@ -29,11 +51,34 @@
     outline-offset: 3px;
   }
 
+  /**
+   * With a single family, weight and tracking carry the hierarchy that a serif
+   * used to carry by contrast. Headings run ExtraBold and tight; the optical
+   * correction has to grow with size, which is why the largest sizes pull in
+   * further still.
+   */
   h1,
   h2,
   h3 {
-    @apply font-display font-normal;
+    @apply font-display font-extrabold;
     text-wrap: balance;
+  }
+
+  /**
+   * Optical tracking scales with size. A geometric sans needs real negative
+   * tracking at display sizes to stop the words falling apart, but the same
+   * value at 22px jams the letters together and the words lose their gaps.
+   */
+  h1 {
+    letter-spacing: -0.042em;
+  }
+
+  h2 {
+    letter-spacing: -0.03em;
+  }
+
+  h3 {
+    letter-spacing: -0.012em;
   }
 
   p {
@@ -72,14 +117,69 @@
       linear-gradient(to top, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0.35) 40%, rgba(10, 10, 10, 0.15) 70%, rgba(10, 10, 10, 0.55) 100%);
   }
 
-  /* Small uppercase label, used for eyebrows and trust rows. */
-  .eyebrow {
-    @apply font-sans text-[11px] uppercase tracking-caps text-mute;
+  /**
+   * A raised panel. Three things together read as depth: a top-down gradient
+   * so the surface is not one flat tone, a 1px rim highlight along the top
+   * edge where the light would catch, and a wide soft shadow underneath that
+   * separates it from the page.
+   */
+  .surface {
+    background-image: linear-gradient(180deg, #17171a 0%, #101012 55%, #0d0d0f 100%);
+    border: 1px solid rgba(242, 238, 230, 0.08);
+    box-shadow:
+      inset 0 1px 0 0 var(--rim-strong),
+      0 1px 2px rgba(0, 0, 0, 0.6),
+      0 30px 70px -40px rgba(0, 0, 0, 0.95);
   }
 
-  /* Gold hairline. */
+  /* Same treatment, lighter, for smaller inset elements. */
+  .surface-soft {
+    background-image: linear-gradient(180deg, #141416 0%, #0e0e10 100%);
+    border: 1px solid rgba(242, 238, 230, 0.06);
+    box-shadow: inset 0 1px 0 0 var(--rim);
+  }
+
+  /**
+   * An ambient pool of warm light behind a focal element. Kept under 10%
+   * opacity and heavily blurred, so it registers as atmosphere rather than as
+   * a visible glow.
+   */
+  .light-pool::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: min(1100px, 130%);
+    height: 70%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(201, 169, 97, 0.09) 0%, rgba(201, 169, 97, 0) 72%);
+  }
+
+  /* Small uppercase label, used for eyebrows and trust rows. */
+  .eyebrow {
+    @apply font-sans text-[11px] font-semibold uppercase tracking-caps text-mute;
+  }
+
+  /* Gold hairline. Centred by default now that sections are centre-aligned. */
   .rule-gold {
     @apply h-px w-10 bg-gold;
+  }
+
+  /**
+   * A full-width divider that fades out at both ends, so sections separate
+   * without a hard line running edge to edge.
+   */
+  .hairline {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(242, 238, 230, 0.11) 22%,
+      rgba(242, 238, 230, 0.11) 78%,
+      transparent 100%
+    );
   }
 }
 
@@ -99,5 +199,12 @@
   /* Safe-area padding for the bottom sticky bar on iOS. */
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Warm cast under the gold CTA, so it sits above the page rather than on it. */
+  .cta-glow {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.25) inset,
+      0 10px 34px -14px rgba(201, 169, 97, 0.65);
   }
 }

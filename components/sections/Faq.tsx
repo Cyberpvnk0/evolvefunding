@@ -1,6 +1,7 @@
 import CtaButton from "@/components/ui/CtaButton";
 import FadeUp from "@/components/motion/FadeUp";
 import FaqItem from "@/components/sections/FaqItem";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { faq, faqSection, hero, offer } from "@/content/site";
 
 /**
@@ -37,17 +38,14 @@ export default function Faq() {
 
       <div className="mx-auto max-w-page">
         <FadeUp>
-          <h2
-            id="faq-headline"
-            className="max-w-[12ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
-          >
-            {faqSection.headline}
-          </h2>
-          <div className="rule-gold mt-6" aria-hidden="true" />
+          <SectionHeading id="faq-headline" headline={faqSection.headline} />
         </FadeUp>
 
         {/* Accordion: hairline above each row, one more under the last. */}
-        <div className="mt-10 max-w-3xl border-b border-line sm:mt-14">
+        {/* The column is centred; the rows keep their text ragged-right because a
+            question sitting opposite a right-hand toggle has to start at a fixed
+            left edge to stay readable. */}
+        <div className="mx-auto mt-10 max-w-3xl border-b border-line sm:mt-14">
           {faq.map((item, i) => (
             <FadeUp key={item.question} delay={Math.min(0.3, i * 0.06)} className="border-t border-line">
               <FaqItem id={`faq-${i + 1}`} question={item.question} answer={item.answer} />

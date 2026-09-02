@@ -25,16 +25,17 @@ const config: Config = {
         "gold-deep": "#B8964F",
       },
       fontFamily: {
-        display: ["var(--font-display)", "Georgia", "Times New Roman", "serif"],
-        sans: ["var(--font-body)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        display: ["var(--font-sans)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        sans: ["var(--font-sans)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
       },
       letterSpacing: {
-        tightest: "-0.03em",
+        // Large geometric sans needs more negative tracking than a serif did.
+        tightest: "-0.035em",
         caps: "0.14em",
       },
       lineHeight: {
-        display: "0.95",
-        snugger: "1.05",
+        display: "1.02",
+        snugger: "1.12",
       },
       maxWidth: {
         page: "1200px",

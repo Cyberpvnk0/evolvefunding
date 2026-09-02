@@ -85,14 +85,14 @@ export default function TestimonialCarousel({ items }: TestimonialCarouselProps)
       >
         {items.map((t) => (
           <li key={t.id} className="flex w-full shrink-0 snap-start sm:w-[calc(50%-1.5rem)] lg:w-[calc(50%-1.75rem)]">
-            <figure className="flex w-full flex-col border-t border-line pt-8 sm:pt-10">
+            <figure className="flex w-full flex-col items-center border-t border-line pt-8 text-center sm:pt-10">
               {/* The opening mark hangs into the margin so the first letter sits on the left edge. */}
-              <blockquote className="font-display text-[28px] leading-snugger tracking-tightest text-bone [text-indent:-0.35em] sm:text-4xl lg:text-5xl">
+              <blockquote className="max-w-[24ch] font-display text-[27px] font-extrabold leading-snugger tracking-tightest text-bone sm:max-w-none sm:text-[34px] lg:text-[40px]">
                 <p>&ldquo;{t.quote}&rdquo;</p>
               </blockquote>
 
               {/* Pushed to the bottom so avatars line up across slides of different length. */}
-              <figcaption className="mt-auto flex items-center gap-3 pt-8 sm:pt-10 lg:pt-12">
+              <figcaption className="mt-auto flex flex-col items-center gap-3 pt-8 sm:flex-row sm:pt-10 lg:pt-12">
                 <Image
                   src={t.avatar}
                   alt=""
@@ -102,7 +102,7 @@ export default function TestimonialCarousel({ items }: TestimonialCarouselProps)
                   quality={70}
                   className="h-10 w-10 shrink-0 rounded-full object-cover"
                 />
-                <div className="min-w-0">
+                <div className="min-w-0 text-center sm:text-left">
                   <p className="text-[14px] leading-snug text-bone">{t.name}</p>
                   <p className="eyebrow mt-1">{t.city}</p>
                 </div>
@@ -114,7 +114,7 @@ export default function TestimonialCarousel({ items }: TestimonialCarouselProps)
 
       {/* Controls: dots on the left, previous/next on the right. */}
       {stops > 1 && (
-        <div className="mt-8 flex items-center justify-between sm:mt-10">
+        <div className="mt-8 flex items-center justify-center gap-6 sm:mt-10">
           <ol className="flex items-center gap-2.5" aria-hidden="true">
             {Array.from({ length: stops }, (_, i) => (
               <li

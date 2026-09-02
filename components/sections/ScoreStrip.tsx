@@ -2,6 +2,7 @@ import Image from "next/image";
 import CountUp from "@/components/motion/CountUp";
 import FadeUp from "@/components/motion/FadeUp";
 import { cn } from "@/lib/cn";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { proof, scoreShots, type ScoreShot } from "@/content/site";
 
 /**
@@ -20,14 +21,11 @@ export default function ScoreStrip() {
     >
       <div className="mx-auto max-w-page">
         <FadeUp>
-          <h2
+          <SectionHeading
             id="scores-headline"
-            className="max-w-[16ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
-          >
-            {proof.scoreStripHeadline}
-          </h2>
-          <p className="mt-4 text-[16px] leading-relaxed text-mute">{proof.scoreStripSubheadline}</p>
-          <div className="rule-gold mt-6" aria-hidden="true" />
+            headline={proof.scoreStripHeadline}
+            sub={proof.scoreStripSubheadline}
+          />
         </FadeUp>
 
         <FadeUp delay={0.1} className="mt-10 sm:mt-14">

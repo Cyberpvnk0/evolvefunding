@@ -504,7 +504,7 @@ export const faq: FaqItem[] = [
   {
     question: "What if nothing gets removed?",
     answer:
-      "You cancel. No contract, no cancellation fee. Results vary and no outcome can be guaranteed, but you will see every dispute we send and every response that comes back in your portal.",
+      "You get your money back. If we do not remove a single negative item in your first three months, we refund every payment you have made. The one condition is that you had negative items to begin with: if your reports are already clean, there is nothing to dispute and the guarantee does not apply.",
   },
   {
     question: "Can I cancel?",
@@ -522,6 +522,27 @@ export const faq: FaqItem[] = [
       "You can dispute for free, and you always have that right. Most people send one letter, get a form response, and stop. We send targeted disputes to all three bureaus every 30 days, escalate anything that comes back verified, and track every item until it is gone.",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// 8b. Guarantee (risk reversal)
+// ---------------------------------------------------------------------------
+
+/**
+ * The money-back guarantee. This is the strongest objection-killer on the
+ * page, so it gets its own moment above the final CTA.
+ *
+ * NOTE: guarantees offered by credit repair organizations are regulated.
+ * Have counsel review this wording, and the matching Terms section, before
+ * launch.
+ */
+export const guarantee = {
+  eyebrow: "Our guarantee",
+  headline: "Nothing Removed In 90 Days? You Get Every Dollar Back.",
+  body: "Give us three months. If we do not remove a single negative item from your reports in that time, email us and we refund everything you have paid. You keep the reports and the work we did.",
+  /** The honest limit on the offer. Stated plainly rather than buried. */
+  fineprint:
+    "One condition: there has to be something to remove. If you sign up with no negative items on file, there is nothing to dispute and the guarantee does not apply.",
+} as const;
 
 // ---------------------------------------------------------------------------
 // 9. Risk reversal + final CTA
@@ -724,8 +745,12 @@ export const terms = {
       body: "Cancel at any time from your portal or by email. Cancellation stops future billing. Fees already paid for a completed month are not refunded, except as required by law.",
     },
     {
-      heading: "No guarantee",
-      body: "Results vary. We do not guarantee any specific score increase, deletion, or approval.",
+      heading: "Money-back guarantee",
+      body: "If Evolve Funding does not remove at least one negative item from your credit reports within the first three months of continuous paid service, you may request a full refund of all fees you have paid, and we will issue it. To qualify you must have had at least one negative, inaccurate, unverifiable, incomplete, or outdated item on your reports when you enrolled, and you must have provided the identification and documents we need to file disputes on your behalf. If you enroll with no such items on file, there is nothing for us to dispute and the guarantee does not apply. Request a refund by emailing the address in the footer within thirty days of the end of your third month.",
+    },
+    {
+      heading: "No guarantee of a specific outcome",
+      body: "Outside the money-back guarantee above, results vary. We do not guarantee any specific score increase, the removal of any particular item, or any approval, credit line, or interest rate.",
     },
     {
       heading: "Your responsibilities",
@@ -753,6 +778,7 @@ export const site = {
   testimonials,
   faqSection,
   faq,
+  guarantee,
   finalCta,
   footer,
   exitIntent,

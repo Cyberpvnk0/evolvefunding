@@ -55,7 +55,7 @@ export default function CtaButton({
 
   const classes = cn(
     "inline-flex items-center justify-center select-none whitespace-nowrap",
-    "bg-gold text-ink font-sans font-semibold tracking-[0.01em] rounded-[3px]",
+    "cta-glow bg-gold text-ink font-sans font-bold tracking-[0.01em] rounded-[3px]",
     "transition-[background-color,transform] duration-200 ease-expensive",
     "hover:bg-gold-deep active:scale-[0.985]",
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold",

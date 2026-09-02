@@ -23,6 +23,23 @@ import { hero } from "@/content/site";
  * LCP candidates, so it must paint visible on the first frame.
  */
 export default function Hero() {
+  /**
+   * Cap the video by the height available rather than by width alone.
+   * Everything around it (headline, subhead, hint, button, proof strip and
+   * padding) measures a fixed ~500px on desktop, so on a short laptop a
+   * 900px-wide 16:9 video pushes the headline off the top of the screen.
+   * Deriving the cap from the viewport height and the configured ratio keeps
+   * the whole hero inside one screen at any window size.
+   *
+   * Applied from `sm` up only. Phone type is smaller, so the hero already fits
+   * there on its own, and a short phone would otherwise hit this bound and
+   * shrink the video for no reason. The inner `max()` floors it so a landscape
+   * phone cannot drive the expression negative.
+   */
+  const [aw, ah] = hero.vsl.aspect.split("/").map((n) => Number.parseFloat(n.trim()));
+  const ratio = aw > 0 && ah > 0 ? aw / ah : 16 / 9;
+  const vslMax = `min(900px, max(280px, calc((100svh - 520px) * ${ratio.toFixed(4)})))`;
+
   return (
     <section
       id="hero"
@@ -56,7 +73,10 @@ export default function Hero() {
         </p>
 
         {/* The centrepiece. */}
-        <div className="animate-fade-up mt-5 w-full max-w-[900px] [animation-delay:200ms] sm:mt-7">
+        <div
+          className="light-pool relative mt-5 w-full [animation-delay:200ms] animate-fade-up sm:mt-7 sm:max-w-[var(--vsl-max)]"
+          style={{ "--vsl-max": vslMax } as React.CSSProperties}
+        >
           <VslPlayer vsl={hero.vsl} priority />
           {hero.vsl.hint ? (
             <p className="mt-2.5 text-[12px] tracking-[0.04em] text-mute sm:mt-3 sm:text-[13px]">

@@ -1,6 +1,7 @@
 import CtaButton from "@/components/ui/CtaButton";
 import FadeUp from "@/components/motion/FadeUp";
 import { ProofGallery } from "@/components/sections/ProofCard";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { hero, proof, proofClients } from "@/content/site";
 
 /**
@@ -19,14 +20,7 @@ export default function ProofWall() {
     >
       <div className="mx-auto max-w-page">
         <FadeUp>
-          <h2
-            id="proof-headline"
-            className="max-w-[12ch] font-display text-[40px] leading-display tracking-tightest text-bone sm:text-6xl lg:text-7xl"
-          >
-            {proof.headline}
-          </h2>
-          <p className="mt-4 text-[16px] leading-relaxed text-mute">{proof.subheadline}</p>
-          <div className="rule-gold mt-6" aria-hidden="true" />
+          <SectionHeading id="proof-headline" headline={proof.headline} sub={proof.subheadline} />
         </FadeUp>
 
         <FadeUp delay={0.1} className="mt-10 sm:mt-14">
@@ -34,7 +28,7 @@ export default function ProofWall() {
         </FadeUp>
 
         {/* Full width on phones, centered auto width from sm. */}
-        <FadeUp delay={0.06} className="mt-10 sm:mt-14 sm:text-center">
+        <FadeUp delay={0.06} className="mt-10 flex flex-col items-center sm:mt-14">
           <CtaButton section="proof" label={hero.cta.label} block className="sm:w-auto" />
           <p className="mt-3 text-[13px] leading-snug text-mute">{hero.cta.subtext}</p>
         </FadeUp>
