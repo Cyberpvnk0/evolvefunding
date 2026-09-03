@@ -606,7 +606,12 @@ export const guarantee = {
 export const finalCta = {
   headline: "Your Next Approval Starts Tonight.",
   body: "Sign up now and your first disputes go out this week. $147 a month. Cancel anytime.",
-  image: "/proof/final-cta.jpg",
+  /**
+   * Optional background photograph. Empty string means no photo: the section
+   * falls back to the ink ground and its pool of warm light, which is how it
+   * ships. Point this at a file in /public/proof/ to put an image back.
+   */
+  image: "",
   imageAlt: "Client holding car keys at dusk",
   cta: {
     label: "Start My Repair Now",
@@ -638,10 +643,9 @@ export const footer = {
    * Have your attorney review before launch.
    */
   disclaimer: [
-    "Results vary. No specific outcome is guaranteed. The scores and approvals shown are individual client results and are not typical of every client.",
+    "Results vary. No specific outcome is guaranteed.",
     "Evolve Funding does not remove accurate and timely information from your credit report. We dispute items that are inaccurate, unverifiable, incomplete, or outdated.",
     "You have the right to dispute inaccurate information in your credit report by contacting the credit bureaus directly, at no cost. You can also cancel this service at any time.",
-    "CROA_DISCLOSURE_PLACEHOLDER: Insert the Consumer Credit File Rights Under State and Federal Law statement required by the Credit Repair Organizations Act, 15 U.S.C. § 1679c, plus any state-specific disclosures and registration numbers.",
   ],
 } as const;
 
@@ -748,10 +752,6 @@ export const disclosures = {
     {
       heading: "Your right to cancel",
       body: "You may cancel this service at any time. There is no contract and no cancellation fee. You may also cancel any purchase within three business days of signing, for any reason, with no penalty.",
-    },
-    {
-      heading: "Consumer Credit File Rights Under State and Federal Law",
-      body: "CROA_DISCLOSURE_PLACEHOLDER: Insert the full statement required by the Credit Repair Organizations Act, 15 U.S.C. § 1679c, here. Include the right to sue a credit repair organization that violates the Act, the prohibition on advance payment, and the statement that you may contact the Federal Trade Commission. Have counsel confirm the text and add any state-specific disclosures, surety bond information, and registration numbers.",
     },
     {
       heading: "Testimonials",

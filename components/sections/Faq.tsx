@@ -54,7 +54,7 @@ export default function Faq() {
         </div>
 
         {/* Checkout */}
-        <FadeUp delay={0.1} className="mt-10 max-w-md sm:mt-12">
+        <FadeUp delay={0.1} className="mx-auto mt-10 flex w-full max-w-md flex-col items-center sm:mt-12">
           <CtaButton section="faq" label={hero.cta.label} block className="sm:w-auto" />
           <p className="mt-3 text-[13px] leading-snug text-mute">{offer.cancelLine}</p>
         </FadeUp>

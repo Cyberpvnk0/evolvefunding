@@ -30,20 +30,26 @@ export default function FinalCta() {
     <section
       id="final-cta"
       aria-labelledby="final-cta-headline"
-      className="relative flex min-h-[100svh] items-center overflow-hidden bg-ink"
+      className="light-pool relative flex min-h-[100svh] items-center overflow-hidden bg-ink"
     >
-      {/* Photography layer */}
-      <div className="vignette absolute inset-0">
-        <Image
-          src={finalCta.image}
-          alt={finalCta.imageAlt}
-          fill
-          loading="lazy"
-          sizes="(orientation: portrait) 178vh, 100vw"
-          quality={70}
-          className="object-cover"
-        />
-      </div>
+      {/*
+        Photography layer, only when one is configured. Without a photo the
+        section is the ink ground plus the section's own pool of warm light,
+        so its depth never depended on the image being there.
+      */}
+      {finalCta.image ? (
+        <div className="vignette absolute inset-0">
+          <Image
+            src={finalCta.image}
+            alt={finalCta.imageAlt}
+            fill
+            loading="lazy"
+            sizes="(orientation: portrait) 178vh, 100vw"
+            quality={70}
+            className="object-cover"
+          />
+        </div>
+      ) : null}
 
       {/* Copy layer */}
       <div className="relative z-10 mx-auto flex w-full max-w-page flex-col items-center px-5 py-16 text-center sm:px-8 sm:py-20">
