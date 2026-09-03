@@ -574,7 +574,7 @@ export const faq: FaqItem[] = [
   {
     question: "Do I need to send anything?",
     answer:
-      "A photo ID, proof of address, and access to your credit monitoring so we can pull your reports. Your case manager walks you through it in the first 24 hours. After that, we handle the rest.",
+      "Your name, your date of birth, the address where you live, and access to your credit monitoring so we can pull your reports. No photo ID, no paperwork to mail. Your case manager sets it up with you in the first 24 hours, and we handle the rest.",
   },
   {
     question: "How is this different from doing it myself?",
@@ -735,8 +735,8 @@ export const thankYou = {
       body: "Your portal login and intake form arrive within 10 minutes. Check spam if you do not see them.",
     },
     {
-      title: "Upload your ID and proof of address",
-      body: "Two photos, taken with your phone. The bureaus will not accept a dispute without them.",
+      title: "Confirm your details",
+      body: "Your name, date of birth, address, and access to your credit monitoring. That is everything we need to pull your reports.",
     },
     {
       title: "Meet your case manager",
@@ -811,7 +811,7 @@ export const privacy = {
   sections: [
     {
       heading: "What we collect",
-      body: "Your name, contact details, and the documents you upload so we can dispute items on your behalf. Payment details are handled by our payment provider and never touch our servers.",
+      body: "Your name, date of birth, address, contact details, and access to your credit monitoring, so we can pull your reports and dispute items on your behalf. Payment details are handled by our payment provider and never touch our servers.",
     },
     {
       heading: "How we use it",
@@ -842,7 +842,7 @@ export const terms = {
     },
     {
       heading: "Money-back guarantee",
-      body: "If Evolve Funding does not remove at least one negative item from your credit reports within the first three months of continuous paid service, you may request a full refund of all fees you have paid, and we will issue it. To qualify you must have had at least one negative, inaccurate, unverifiable, incomplete, or outdated item on your reports when you enrolled, and you must have provided the identification and documents we need to file disputes on your behalf. If you enroll with no such items on file, there is nothing for us to dispute and the guarantee does not apply. Request a refund by emailing the address in the footer within thirty days of the end of your third month.",
+      body: "If Evolve Funding does not remove at least one negative item from your credit reports within the first three months of continuous paid service, you may request a full refund of all fees you have paid, and we will issue it. To qualify you must have had at least one negative, inaccurate, unverifiable, incomplete, or outdated item on your reports when you enrolled, and you must have provided the information and credit monitoring access we need to pull your reports and file disputes on your behalf. If you enroll with no such items on file, there is nothing for us to dispute and the guarantee does not apply. Request a refund by emailing the address in the footer within thirty days of the end of your third month.",
     },
     {
       heading: "No guarantee of a specific outcome",
