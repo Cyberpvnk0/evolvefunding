@@ -113,6 +113,8 @@ export interface TextSegment {
   text: string;
   /** danger = red, warn = orange, success = green, strong = bold. */
   tone?: "danger" | "warn" | "success" | "strong";
+  /** Mark this run with a hand-drawn underline. */
+  underline?: boolean;
 }
 
 export interface Step {
@@ -220,7 +222,9 @@ export const hero = {
 // ---------------------------------------------------------------------------
 
 export const stickyBar = {
-  left: "$147/mo, cancel anytime",
+  /** Shown on the left of the bar. Set to the brand name, so the bar reads as
+   *  a wordmark beside the button rather than repeating the price. */
+  left: "Evolve Funding",
   cta: "Start Now",
 } as const;
 
@@ -428,7 +432,7 @@ export const problem = {
     { text: " you more than " },
     { text: "$147 a month", tone: "success" },
     { text: ". " },
-    { text: "Every month.", tone: "strong" },
+    { text: "Every month.", tone: "strong", underline: true },
   ] as TextSegment[],
 };
 
@@ -437,7 +441,8 @@ export const problem = {
 // ---------------------------------------------------------------------------
 
 export const howItWorks = {
-  headline: "Three Steps. We Handle The Rest.",
+  /** "\n" forces the line break; the two halves are centred on each other. */
+  headline: "Three Steps.\nWe Handle The Rest.",
   steps: [
     {
       title: "Sign up",
@@ -577,6 +582,42 @@ export const faq: FaqItem[] = [
       "You can dispute for free, and you always have that right. Most people send one letter, get a form response, and stop. We send targeted disputes to all three bureaus every 30 days, escalate anything that comes back verified, and track every item until it is gone.",
   },
 ];
+
+// ---------------------------------------------------------------------------
+// 8a. Contact
+// ---------------------------------------------------------------------------
+
+/**
+ * The one place on the page that is not a checkout button. Someone who has
+ * read the FAQ and still hesitates is worth a conversation rather than losing.
+ * Posts to /api/lead with source "contact_form", the same route the
+ * exit-intent sheet uses, so both land wherever GHL_WEBHOOK_URL points.
+ */
+export const contact = {
+  eyebrow: "Still deciding?",
+  headline: "Have Questions? Speak To A Human Who Cares.",
+  body: "Send a note and a real person answers. No bots, no call centre, no pressure to buy.",
+  fields: {
+    firstName: { label: "First name", placeholder: "First name" },
+    lastName: { label: "Last name", placeholder: "Last name" },
+    email: { label: "Email address", placeholder: "Email address" },
+    phone: { label: "Mobile number", placeholder: "Mobile number" },
+    message: { label: "Your question", placeholder: "What would you like to know?" },
+  },
+  button: "Send My Question",
+  sending: "Sending",
+  success: "Got it. A real person will be in touch shortly.",
+  errors: {
+    firstName: "Enter your first name.",
+    lastName: "Enter your last name.",
+    email: "Enter a valid email address.",
+    phone: "Enter a valid mobile number.",
+    message: "Tell us what you would like to know.",
+    send: "That did not go through. Try again.",
+  },
+  consent:
+    "By submitting, you agree to be contacted about your question. Message and data rates may apply.",
+} as const;
 
 // ---------------------------------------------------------------------------
 // 8b. Guarantee (risk reversal)
@@ -833,6 +874,7 @@ export const site = {
   testimonials,
   faqSection,
   faq,
+  contact,
   guarantee,
   finalCta,
   footer,

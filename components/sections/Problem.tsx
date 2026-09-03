@@ -1,4 +1,5 @@
 import FadeUp from "@/components/motion/FadeUp";
+import { cn } from "@/lib/cn";
 import { problem, type TextSegment } from "@/content/site";
 
 /**
@@ -12,9 +13,9 @@ const TONE: Record<NonNullable<TextSegment["tone"]> | "base", string> = {
   // Emphasised runs never break across lines: a coloured phrase split over a
   // line ending reads as two fragments rather than as one idea. Each is short
   // enough that holding it together cannot overflow even a 320px screen.
-  danger: "whitespace-nowrap text-danger",
-  warn: "whitespace-nowrap text-warn",
-  success: "whitespace-nowrap text-success",
+  danger: "whitespace-nowrap font-bold text-danger",
+  warn: "whitespace-nowrap font-bold text-warn",
+  success: "whitespace-nowrap font-bold text-success",
   strong: "whitespace-nowrap font-bold text-bone",
 };
 
@@ -53,9 +54,12 @@ export default function Problem() {
         {/* Closer */}
         <FadeUp delay={problem.lines.length * 0.08} className="flex flex-col items-center">
           <div className="rule-gold mt-9 sm:mt-11" />
-          <p className="mt-7 max-w-[34ch] text-[17px] leading-relaxed text-bone/85 sm:mt-8 sm:max-w-prose sm:text-xl">
+          <p className="mt-7 max-w-[30ch] text-[19px] leading-relaxed text-bone/85 sm:mt-8 sm:max-w-[40ch] sm:text-[22px] lg:text-[26px]">
             {problem.closer.map((segment, i) => (
-              <span key={i} className={TONE[segment.tone ?? "base"]}>
+              <span
+                key={i}
+                className={cn(TONE[segment.tone ?? "base"], segment.underline && "underline-sketch")}
+              >
                 {segment.text}
               </span>
             ))}

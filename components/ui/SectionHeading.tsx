@@ -25,12 +25,20 @@ export default function SectionHeading({
   sub,
   className,
 }: SectionHeadingProps) {
+  // A headline may force its own break with "\n" when the natural wrap falls
+  // in the wrong place. Those get a wider measure, since the break is already
+  // decided and a narrow column would only wrap them a second time.
+  const hasBreak = headline.includes("\n");
+
   return (
     <div className={cn("flex flex-col items-center text-center", className)}>
       {eyebrow ? <p className="eyebrow mb-4 text-gold/85">{eyebrow}</p> : null}
       <h2
         id={id}
-        className="max-w-[16ch] font-display text-[36px] leading-display tracking-tightest text-bone sm:text-[52px] lg:text-[62px]"
+        className={cn(
+          "whitespace-pre-line font-display text-[36px] leading-display tracking-tightest text-bone sm:text-[52px] lg:text-[62px]",
+          hasBreak ? "max-w-[22ch]" : "max-w-[16ch]",
+        )}
       >
         {headline}
       </h2>

@@ -30,6 +30,7 @@ const SECTIONS = [
   "included",
   "testimonials",
   "faq",
+  "contact",
   "guarantee",
   "final-cta",
 ];

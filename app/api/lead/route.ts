@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 /**
- * POST /api/lead. Receives the exit-intent lead (first name, last name, phone)
- * and forwards it to the GoHighLevel inbound webhook, server-side, so the
- * webhook URL never reaches the browser.
+ * POST /api/lead. Receives a lead and forwards it to the GoHighLevel inbound
+ * webhook, server-side, so the webhook URL never reaches the browser.
+ *
+ * Two sources share this route: the exit-intent sheet (name and phone) and the
+ * contact section (name, phone, email and a message). Email and message are
+ * required only for the contact form, since the sheet does not ask for them.
  *
  * With GHL_WEBHOOK_URL unset (local, preview) the route still answers
  * { ok: true, forwarded: false } so the form succeeds, and warns once in the
@@ -14,7 +17,7 @@ export const runtime = "nodejs";
 
 /** How long we wait on the webhook before giving up. */
 const TIMEOUT_MS = 8000;
-const SOURCES = new Set(["exit_intent", "timer"]);
+const SOURCES = new Set(["exit_intent", "timer", "contact_form"]);
 /** Same attribution keys lib/checkout.ts captures. Anything else is dropped. */
 const UTM_KEYS = [
   "utm_source",
@@ -29,6 +32,10 @@ const UTM_KEYS = [
 
 /** Longest name we accept. Anything beyond this is a paste, not a name. */
 const NAME_MAX = 80;
+/** Long enough for a real question, short enough to bound the payload. */
+const MESSAGE_MAX = 4000;
+const EMAIL_MAX = 254;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 let warnedMissingWebhook = false;
 
@@ -44,6 +51,8 @@ function cleanName(input: unknown): string {
 interface LeadBody {
   firstName?: unknown;
   lastName?: unknown;
+  email?: unknown;
+  message?: unknown;
   phone?: unknown;
   source?: unknown;
   path?: unknown;
@@ -85,6 +94,15 @@ export async function POST(req: Request) {
   const phone = (raw.startsWith("+") ? "+" : "") + digits;
 
   const source = typeof body.source === "string" && SOURCES.has(body.source) ? body.source : "unknown";
+
+  // The contact form asks for an email and a message; the sheet does not.
+  const isContact = source === "contact_form";
+  const email = typeof body.email === "string" ? body.email.trim().slice(0, EMAIL_MAX) : "";
+  const message =
+    typeof body.message === "string" ? body.message.trim().slice(0, MESSAGE_MAX) : "";
+  if (isContact && (!EMAIL.test(email) || !message)) {
+    return NextResponse.json({ ok: false }, { status: 400 });
+  }
   const path = typeof body.path === "string" && body.path.startsWith("/") ? body.path.slice(0, 200) : "/";
   const utm = pickUtm(body.utm);
 
@@ -110,6 +128,10 @@ export async function POST(req: Request) {
         // Sent alongside the parts, since some CRM mappings expect one field.
         name: `${firstName} ${lastName}`,
         phone,
+        // Present only when the sender supplied them, so the sheet's payload
+        // keeps its old shape rather than gaining two empty fields.
+        ...(email ? { email } : {}),
+        ...(message ? { message } : {}),
         source,
         path,
         ...utm,

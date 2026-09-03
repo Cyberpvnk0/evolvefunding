@@ -106,9 +106,8 @@ export default function StickyBar() {
             className="pb-safe border-t border-line bg-ink/90 backdrop-blur-md sm:border-b sm:border-t-0 sm:pb-0"
           >
             <div className="mx-auto flex h-14 max-w-page items-center justify-between gap-4 px-5 sm:h-16 sm:px-8">
-              <p className="flex min-w-0 items-center gap-2 text-[13px] text-bone sm:text-[14px]">
-                <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-gold" />
-                <span className="truncate">{stickyBar.left}</span>
+              <p className="min-w-0 truncate font-display text-[15px] font-extrabold tracking-tightest text-bone sm:text-[17px]">
+                {stickyBar.left}
               </p>
               <CtaButton section="sticky_bar" size="md" label={stickyBar.cta} className="shrink-0" />
             </div>
