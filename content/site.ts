@@ -443,6 +443,8 @@ export const problem = {
 export const howItWorks = {
   /** "\n" forces the line break; the two halves are centered on each other. */
   headline: "Three Steps.\nWe Handle The Rest.",
+  /** The differentiator, stated before the steps rather than buried in them. */
+  sub: "Most companies mail template letters and wait. We work your file until items come off.",
   steps: [
     {
       title: "Sign up",
@@ -450,8 +452,8 @@ export const howItWorks = {
       icon: "signup",
     },
     {
-      title: "We pull your reports and dispute",
-      body: "All three bureaus. Every negative item. First round filed the week you join.",
+      title: "We audit, dispute, and escalate",
+      body: "All three bureaus, every negative item. When one comes back verified, we push harder instead of refiling the same letter.",
       icon: "dispute",
     },
     {
@@ -469,7 +471,11 @@ export const howItWorks = {
 export const included = {
   headline: "What $147 Covers.",
   items: [
+    "A line-by-line audit of all three reports before anything is filed",
     "Full 3-bureau dispute process: Equifax, Experian, and TransUnion",
+    "Every dispute argued on a specific legal ground, never a template",
+    "Escalation when an item comes back verified, not another form letter",
+    "Direct pressure on the furnisher, not only the bureau",
     "Unlimited disputes, every 30 days, until every item is resolved",
     "Monthly progress updates with every response from the bureaus",
     "A personal case manager who knows your file by name",
@@ -567,6 +573,11 @@ export const faq: FaqItem[] = [
       "You get your money back. If we do not remove a single negative item in your first three months, we refund every payment you have made. The one condition is that you had negative items to begin with: if your reports are already clean, there is nothing to dispute and the guarantee does not apply.",
   },
   {
+    question: "How is this different from other credit repair companies?",
+    answer:
+      "Most of them mail the same template letters for every client and wait to see what sticks. We build a case file: every account audited, every dispute argued on its own grounds, and every verified response escalated rather than refiled. We also work the furnisher side directly, which is where the stubborn items usually come off.",
+  },
+  {
     question: "Can I cancel?",
     answer:
       "Any time, from your portal or by email. You are billed month to month. There is no contract and no fee to leave.",
@@ -579,7 +590,7 @@ export const faq: FaqItem[] = [
   {
     question: "How is this different from doing it myself?",
     answer:
-      "You can dispute for free, and you always have that right. Most people send one letter, get a form response, and stop. We send targeted disputes to all three bureaus every 30 days, escalate anything that comes back verified, and track every item until it is gone.",
+      "You can dispute for free, and you always have that right. The difference is what happens after the first no. Most people send one letter, get a form response saying the item was verified, and stop there. We audit all three reports line by line, argue every dispute on a specific legal ground, and when a bureau returns an item as verified we demand to know how it was verified and go directly to the furnisher reporting it. That escalation is where most deletions actually happen, and it is the part almost nobody does alone.",
   },
 ];
 

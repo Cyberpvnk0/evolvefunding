@@ -17,19 +17,23 @@ export default function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-headline"
-      className="relative overflow-hidden px-5 py-14 sm:px-8 sm:py-28 lg:py-36"
+      className="relative overflow-hidden px-5 py-10 sm:px-8 sm:py-28 lg:py-36"
     >
       <div className="mx-auto max-w-page">
         <FadeUp>
-          <SectionHeading id="how-it-works-headline" headline={howItWorks.headline} />
+          <SectionHeading
+            id="how-it-works-headline"
+            headline={howItWorks.headline}
+            sub={howItWorks.sub}
+          />
         </FadeUp>
 
-        <ol className="mx-auto mt-8 grid max-w-4xl gap-2.5 sm:mt-14 sm:gap-4 lg:grid-cols-3">
+        <ol className="mx-auto mt-6 grid max-w-4xl gap-1.5 sm:mt-14 sm:gap-4 lg:grid-cols-3">
           {howItWorks.steps.map((step, i) => (
             <li key={step.title}>
               <FadeUp
                 delay={0.08 + i * 0.08}
-                className="surface-soft flex h-full flex-col items-center rounded-[3px] px-5 py-5 text-center sm:px-6 sm:py-8"
+                className="surface-soft flex h-full flex-col items-center rounded-[3px] px-5 py-3.5 text-center sm:px-6 sm:py-8"
               >
                 {/* Icon and step number share a line on phones: the section has
                     to stay inside one screen, and this is the cheapest 24px. */}
@@ -40,7 +44,7 @@ export default function HowItWorks() {
                 <h3 className="mt-2 font-display text-[21px] leading-snugger text-bone sm:mt-2 sm:text-2xl">
                   {step.title}
                 </h3>
-                <p className="mt-2 max-w-[34ch] text-[14px] leading-relaxed text-mute sm:mt-2.5 sm:text-[15px]">
+                <p className="mt-1.5 max-w-[34ch] text-[14px] leading-relaxed text-mute sm:mt-2.5 sm:text-[15px]">
                   {step.body}
                 </p>
               </FadeUp>
