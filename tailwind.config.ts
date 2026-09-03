@@ -23,6 +23,14 @@ const config: Config = {
         // The one accent. CTAs and score numbers only.
         gold: "#C9A961",
         "gold-deep": "#B8964F",
+        /**
+         * Emphasis colours for inline copy. Deliberately desaturated against a
+         * pure alert palette so they read as considered rather than as browser
+         * defaults, while clearing 4.5:1 on the ink background.
+         */
+        danger: "#F0645A",
+        warn: "#F2A25C",
+        success: "#4FC98A",
       },
       fontFamily: {
         display: ["var(--font-sans)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],

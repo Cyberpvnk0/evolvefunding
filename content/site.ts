@@ -104,6 +104,17 @@ export interface Vsl {
   captions: string;
 }
 
+/**
+ * A run of copy with optional emphasis. Lets a single sentence carry colour
+ * or weight without moving any of its words into a component.
+ * Segments are concatenated exactly as written, so keep the spaces.
+ */
+export interface TextSegment {
+  text: string;
+  /** danger = red, warn = orange, success = green, strong = bold. */
+  tone?: "danger" | "warn" | "success" | "strong";
+}
+
 export interface Step {
   title: string;
   body: string;
@@ -406,8 +417,20 @@ export const problem = {
     "Paying 24% interest instead of 6%.",
     "Landlords picking the other applicant.",
   ],
-  closer: "Bad credit is costing you more than $147 a month. Every month.",
-} as const;
+  /**
+   * Reads: "Bad credit is costing you more than $147 a month. Every month."
+   * Split so the loss, the cost and the recurrence each carry their own colour.
+   */
+  closer: [
+    { text: "Bad credit", tone: "danger" },
+    { text: " is " },
+    { text: "costing", tone: "warn" },
+    { text: " you more than " },
+    { text: "$147 a month", tone: "success" },
+    { text: ". " },
+    { text: "Every month.", tone: "strong" },
+  ] as TextSegment[],
+};
 
 // ---------------------------------------------------------------------------
 // 5. How it works
