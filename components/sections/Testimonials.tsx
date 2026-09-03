@@ -4,7 +4,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { testimonials, testimonialsSection } from "@/content/site";
 
 /**
- * 7. TESTIMONIALS. Centred heading, then a swipeable row of client quotes.
+ * 7. TESTIMONIALS. Centered heading, then a swipeable row of client quotes.
  * No cards, no stars, no autoplay: the words carry it.
  *
  * The heading is server rendered. The carousel is the only client piece, and

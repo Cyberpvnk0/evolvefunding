@@ -105,7 +105,7 @@ export interface Vsl {
 }
 
 /**
- * A run of copy with optional emphasis. Lets a single sentence carry colour
+ * A run of copy with optional emphasis. Lets a single sentence carry color
  * or weight without moving any of its words into a component.
  * Segments are concatenated exactly as written, so keep the spaces.
  */
@@ -176,7 +176,7 @@ export const hero = {
   backdrop: "/proof/hero-backdrop.jpg",
   backdropAlt: "Evolve Funding clients standing beside the cars they were approved for",
 
-  /** The video sales letter. The centrepiece of the page. */
+  /** The video sales letter. The centerpiece of the page. */
   vsl: {
     type: "file",
     src: "/proof/vsl.mp4",
@@ -423,7 +423,7 @@ export const problem = {
   ],
   /**
    * Reads: "Bad credit is costing you more than $147 a month. Every month."
-   * Split so the loss, the cost and the recurrence each carry their own colour.
+   * Split so the loss, the cost and the recurrence each carry their own color.
    */
   closer: [
     { text: "Bad credit", tone: "danger" },
@@ -441,7 +441,7 @@ export const problem = {
 // ---------------------------------------------------------------------------
 
 export const howItWorks = {
-  /** "\n" forces the line break; the two halves are centred on each other. */
+  /** "\n" forces the line break; the two halves are centered on each other. */
   headline: "Three Steps.\nWe Handle The Rest.",
   steps: [
     {
@@ -596,7 +596,7 @@ export const faq: FaqItem[] = [
 export const contact = {
   eyebrow: "Still deciding?",
   headline: "Have Questions? Speak To A Human Who Cares.",
-  body: "Send a note and a real person answers. No bots, no call centre, no pressure to buy.",
+  body: "Send a note and a real person answers. No bots, no call center, no pressure to buy.",
   fields: {
     firstName: { label: "First name", placeholder: "First name" },
     lastName: { label: "Last name", placeholder: "Last name" },

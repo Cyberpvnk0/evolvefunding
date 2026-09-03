@@ -3,14 +3,14 @@ import { cn } from "@/lib/cn";
 import { problem, type TextSegment } from "@/content/site";
 
 /**
- * Emphasis for an inline run of copy. The colours are the one place on the
+ * Emphasis for an inline run of copy. The colors are the one place on the
  * page that departs from the single-accent palette: this sentence is the
  * argument for buying, and the loss, the cost and the recurrence each carry
  * a different meaning, so each gets its own.
  */
 const TONE: Record<NonNullable<TextSegment["tone"]> | "base", string> = {
   base: "",
-  // Emphasised runs never break across lines: a coloured phrase split over a
+  // Emphasised runs never break across lines: a colored phrase split over a
   // line ending reads as two fragments rather than as one idea. Each is short
   // enough that holding it together cannot overflow even a 320px screen.
   danger: "whitespace-nowrap font-bold text-danger",
@@ -20,7 +20,7 @@ const TONE: Record<NonNullable<TextSegment["tone"]> | "base", string> = {
 };
 
 /**
- * 4. THE PROBLEM. Three short statements stacked down the centre of the page,
+ * 4. THE PROBLEM. Three short statements stacked down the center of the page,
  * a gold hairline, then the closer. Text only: no headline block, no icons,
  * no cards. The weight of the type is the whole design here.
  *

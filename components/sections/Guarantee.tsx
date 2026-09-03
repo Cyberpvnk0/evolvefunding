@@ -7,7 +7,7 @@ import { guarantee } from "@/content/site";
  *
  * Given its own moment rather than buried in the FAQ, because on a page whose
  * only job is a purchase, removing the downside is the most valuable sentence
- * available. One raised panel over a pool of warm light, centred, with the
+ * available. One raised panel over a pool of warm light, centered, with the
  * limitation stated plainly underneath rather than hidden: a guarantee that
  * visibly tells you where it stops is more believable than one that does not.
  */

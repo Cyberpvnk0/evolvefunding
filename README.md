@@ -147,7 +147,7 @@ Notes worth knowing:
 
 | Asset | Path | Notes |
 | --- | --- | --- |
-| VSL | `public/proof/vsl.mp4` | Your video sales letter, the centrepiece of the hero. 1280 × 720 or 1920 × 1080, H.264, `-movflags +faststart` so it starts instantly: `ffmpeg -i in.mov -vf scale=1280:-2 -c:v libx264 -crf 23 -c:a aac -b:a 128k -movflags +faststart vsl.mp4`. Nothing downloads until the visitor presses play. |
+| VSL | `public/proof/vsl.mp4` | Your video sales letter, the centerpiece of the hero. 1280 × 720 or 1920 × 1080, H.264, `-movflags +faststart` so it starts instantly: `ffmpeg -i in.mov -vf scale=1280:-2 -c:v libx264 -crf 23 -c:a aac -b:a 128k -movflags +faststart vsl.mp4`. Nothing downloads until the visitor presses play. |
 | VSL poster | `public/proof/vsl-poster.jpg` | The thumbnail before play, and the LCP image. This single asset moves play rate more than anything else on the page: your face, large, plus a legible result. 1600 × 900, under 150 KB. |
 | Hero backdrop | `public/proof/hero-backdrop.jpg` | Dark still behind the video, held at 40% opacity. 1920 × 1080, under 150 KB. |
 | Final CTA still | `public/proof/final-cta.jpg` | 1920 × 1080. |

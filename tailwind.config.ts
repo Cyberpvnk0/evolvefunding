@@ -24,7 +24,7 @@ const config: Config = {
         gold: "#C9A961",
         "gold-deep": "#B8964F",
         /**
-         * Emphasis colours for inline copy. Deliberately desaturated against a
+         * Emphasis colors for inline copy. Deliberately desaturated against a
          * pure alert palette so they read as considered rather than as browser
          * defaults, while clearing 4.5:1 on the ink background.
          */

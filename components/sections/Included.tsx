@@ -4,14 +4,14 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { hero, included, offer } from "@/content/site";
 
 /**
- * 6. WHAT'S INCLUDED. One raised card, centred: the inclusions as a
+ * 6. WHAT'S INCLUDED. One raised card, centered: the inclusions as a
  * hairline-separated list, the value anchor, then a checkout button.
  *
  * A single surface, not a grid. The card carries the `.surface` treatment (top
  * rim light, vertical gradient, wide soft shadow) and sits over a faint pool of
  * warm light, so the offer visibly lifts off the page instead of lying flat on
- * it. The rows keep their text left-aligned inside the centred card: a list of
- * six differing lengths is far easier to scan ragged-right than centred.
+ * it. The rows keep their text left-aligned inside the centered card: a list of
+ * six differing lengths is far easier to scan ragged-right than centered.
  */
 export default function Included() {
   return (
@@ -33,7 +33,7 @@ export default function Included() {
                   key={item}
                   className="flex items-start gap-3 border-t border-line py-4 text-[16px] leading-relaxed text-bone/90 first:border-t-0 first:pt-0"
                 >
-                  {/* Offset so the dot sits on the centre of the first line: (1.625em - 0.25em) / 2. */}
+                  {/* Offset so the dot sits on the center of the first line: (1.625em - 0.25em) / 2. */}
                   <span aria-hidden="true" className="mt-[0.6875em] h-1 w-1 shrink-0 rounded-full bg-gold" />
                   <span>{item}</span>
                 </li>

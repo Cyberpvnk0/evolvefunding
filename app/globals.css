@@ -170,7 +170,7 @@
     @apply font-sans text-[11px] font-semibold uppercase tracking-caps text-mute;
   }
 
-  /* Gold hairline. Centred by default now that sections are centre-aligned. */
+  /* Gold hairline. Centered by default now that sections are center-aligned. */
   .rule-gold {
     @apply h-px w-10 bg-gold;
   }

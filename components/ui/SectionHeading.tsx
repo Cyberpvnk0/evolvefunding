@@ -12,7 +12,7 @@ interface SectionHeadingProps {
 
 /**
  * The heading block every section shares: eyebrow, headline, gold rule, and an
- * optional line of support, centred in a measured column.
+ * optional line of support, centered in a measured column.
  *
  * Having one component for this is what makes the sections feel like one page
  * rather than a stack of separate ones: identical type scale, identical

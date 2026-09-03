@@ -42,7 +42,7 @@ export default function Faq() {
         </FadeUp>
 
         {/* Accordion: hairline above each row, one more under the last. */}
-        {/* The column is centred; the rows keep their text ragged-right because a
+        {/* The column is centered; the rows keep their text ragged-right because a
             question sitting opposite a right-hand toggle has to start at a fixed
             left edge to stay readable. */}
         <div className="mx-auto mt-10 max-w-3xl border-b border-line sm:mt-14">

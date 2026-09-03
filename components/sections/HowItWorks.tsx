@@ -4,7 +4,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { howItWorks } from "@/content/site";
 
 /**
- * 5. HOW IT WORKS. The three steps as a centred ordered list: gold line icon,
+ * 5. HOW IT WORKS. The three steps as a centered ordered list: gold line icon,
  * step number, title, one line of body.
  *
  * Each step sits on its own soft surface rather than on the flat page, which

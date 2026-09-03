@@ -64,7 +64,7 @@ export default function ThankYouPage() {
                   key={entry.day}
                   className="border-t border-line py-4 sm:grid sm:grid-cols-[8rem_1fr] sm:gap-x-8 sm:py-5"
                 >
-                  {/* Nudged down on sm so the 11px label sits on the centre of the body's first line. */}
+                  {/* Nudged down on sm so the 11px label sits on the center of the body's first line. */}
                   <dt className="eyebrow sm:pt-[5px]">{entry.day}</dt>
                   <dd className="mt-1.5 text-[16px] leading-relaxed text-bone/85 sm:mt-0">{entry.body}</dd>
                 </div>

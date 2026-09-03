@@ -11,7 +11,7 @@ import { hero } from "@/content/site";
  * button, then a compact proof strip (score jump + trust items). All of it is
  * sized to fit inside one viewport at 390px without scrolling, which is the
  * constraint that drives every type size and gap here. The section is a
- * flex column with `justify-center`, so on a tall screen the block centres and
+ * flex column with `justify-center`, so on a tall screen the block centers and
  * on a short one it packs from the top and the gaps take the strain.
  *
  * The VSL poster is the only priority image on the page, since it is the LCP
@@ -72,7 +72,7 @@ export default function Hero() {
           {hero.subheadline}
         </p>
 
-        {/* The centrepiece. */}
+        {/* The centerpiece. */}
         <div
           className="light-pool relative mt-5 w-full [animation-delay:200ms] animate-fade-up sm:mt-6 sm:max-w-[var(--vsl-max)]"
           style={{ "--vsl-max": vslMax } as React.CSSProperties}
